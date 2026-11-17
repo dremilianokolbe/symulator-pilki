@@ -1,0 +1,44 @@
+### Przebieg 1: 100 symulacji na mecz
+Kalibracja na eliminacjach Euro 2016: 267 meczów × 100 symulacji
+
+Rzeczywistość: gole/mecz 2.61, remisy 18.7%, wygrane gospodarzy 43.8%, różnica ≥3 goli 20.6%
+
+Model                         Log-loss  Brier   Gole/mecz  Remisy   Różn.≥3
+──────────────────────────────────────────────────────────────────────────────
+Częstości (bez wiedzy o sile)    1.043  0.633  
+Elo + prosty model remisów       0.872  0.497  
+Silnik, 20 Elo/pkt OVR           0.955  0.522       4.26   14.2%    45.9%   (227 s)
+Silnik, 25 Elo/pkt OVR           0.917  0.511       3.51   16.5%    37.5%   (195 s)
+
+  Przedziały pewności (silnik 25 Elo/pkt): przewidziana szansa wygranej gospodarzy vs rzeczywistość
+    0.0%–20.0%   meczów  87: przewidziano   8.2%, było  16.1%
+   20.0%–40.0%   meczów  37: przewidziano  29.6%, było  27.0%
+   40.0%–60.0%   meczów  31: przewidziano  49.9%, było  38.7%
+   60.0%–80.0%   meczów  45: przewidziano  70.0%, było  62.2%
+   80.0%–100.0%  meczów  67: przewidziano  93.0%, było  79.1%
+
+Silnik, 30 Elo/pkt OVR           0.881  0.504       3.19   18.5%    31.9%   (93 s)
+
+
+### Przebieg 2: 80 symulacji na mecz
+Kalibracja na eliminacjach Euro 2016: 267 meczów × 80 symulacji
+
+Rzeczywistość: gole/mecz 2.61, remisy 18.7%, wygrane gospodarzy 43.8%, różnica ≥3 goli 20.6%
+
+Model                         Log-loss  Brier   Gole/mecz  Remisy   Różn.≥3
+──────────────────────────────────────────────────────────────────────────────
+Częstości (bez wiedzy o sile)    1.043  0.633  
+Elo + prosty model remisów       0.872  0.497  
+Silnik, 35 Elo/pkt OVR           0.893  0.509       3.02   20.2%    27.6%   (75 s)
+Silnik, 40 Elo/pkt OVR           0.880  0.506       2.91   21.5%    24.1%   (101 s)
+
+  Przedziały pewności (silnik 40 Elo/pkt): przewidziana szansa wygranej gospodarzy vs rzeczywistość
+    0.0%–20.0%   meczów  54: przewidziano  10.4%, było  13.0%
+   20.0%–40.0%   meczów  69: przewidziano  29.0%, było  26.1%
+   40.0%–60.0%   meczów  44: przewidziano  49.5%, było  50.0%
+   60.0%–80.0%   meczów  58: przewidziano  68.0%, było  60.3%
+   80.0%–100.0%  meczów  42: przewidziano  88.5%, było  83.3%
+
+Silnik, 45 Elo/pkt OVR           0.874  0.506       2.83   22.5%    22.0%   (228 s)
+Silnik, 50 Elo/pkt OVR           0.890  0.517       2.78   23.5%    19.9%   (195 s)
+

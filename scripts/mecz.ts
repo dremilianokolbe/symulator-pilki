@@ -2,11 +2,13 @@
  * Podgląd jednego meczu w terminalu: relacja, statystyki, oceny.
  * Uruchom: npm run mecz [-- --seed 123 --puchar --pogoda heat]
  */
+import { readFileSync } from 'node:fs';
 import { describe, minuteLabel } from '../src/commentary/pl';
+import { buildEuroTeam, type Euro2016Data } from '../src/scenarios/euro2016';
 import { POSITION_LABEL } from '../src/engine/attributes';
 import { simulateMatch } from '../src/engine/match';
 import { createRng } from '../src/engine/rng';
-import type { Player, Weather } from '../src/engine/types';
+import type { MatchTeamInput, Player, Weather } from '../src/engine/types';
 import { generateTeam } from '../src/generator/players';
 
 const arg = (name: string) => {
@@ -17,10 +19,24 @@ const seed = Number(arg('--seed') ?? Date.now() % 100000);
 const knockout = process.argv.includes('--puchar');
 const weather = (arg('--pogoda') ?? 'clear') as Weather;
 
-// Drużyny demonstracyjne (fikcyjni zawodnicy), dopóki nie mamy danych Euro 2016.
-const rng = createRng(2016);
-const home = generateTeam(rng, { id: 'POL', name: 'Polska', shortName: 'POL', quality: 74, formation: '4-4-2' });
-const away = generateTeam(rng, { id: 'GER', name: 'Niemcy', shortName: 'GER', quality: 80, formation: '4-2-3-1' });
+// Prawdziwe kadry Euro 2016 (--dom Poland --gosc Germany) albo drużyny demonstracyjne.
+const homeName = arg('--dom');
+const awayName = arg('--gosc');
+let home: { squad: Player[]; input: MatchTeamInput };
+let away: { squad: Player[]; input: MatchTeamInput };
+if (homeName && awayName) {
+  const data: Euro2016Data = {
+    squads: JSON.parse(readFileSync('data/processed/euro2016/kadry.json', 'utf8')),
+    elo: JSON.parse(readFileSync('data/processed/euro2016/elo.json', 'utf8'))['2016-06-01'],
+  };
+  home = buildEuroTeam(data, homeName);
+  away = buildEuroTeam(data, awayName);
+} else {
+  const rng = createRng(2016);
+  home = generateTeam(rng, { id: 'POL', name: 'Polska', shortName: 'POL', quality: 74, formation: '4-4-2' });
+  away = generateTeam(rng, { id: 'GER', name: 'Niemcy', shortName: 'GER', quality: 80, formation: '4-2-3-1' });
+}
+const neutral = process.argv.includes('--neutralny');
 
 const players = new Map<string, Player>();
 for (const p of [...home.squad, ...away.squad]) players.set(p.id, p);
@@ -34,6 +50,7 @@ const r = simulateMatch({
   home: home.input,
   away: away.input,
   knockout,
+  neutral,
   weather,
   importance: 70,
   referee: { name: 'Sędzia', strictness: 55, penaltyTendency: 50 },
@@ -78,7 +95,7 @@ for (const side of ['home', 'away'] as const) {
       p.red ? '🟥' : '',
     ].filter(Boolean).join(' ');
     console.log(
-      `  ${p.rating.toFixed(1)}  ${(pos ? POSITION_LABEL[pos] : 'rez').padEnd(4)} ${names.player(p.playerId).padEnd(14)} ${String(p.minutes).padStart(3)}'  kondycja ${String(p.condition).padStart(3)}%  ${extras}`,
+      `  ${p.rating.toFixed(1)}  ${(pos ? POSITION_LABEL[pos] : 'rez').padEnd(4)} ${names.player(p.playerId).padEnd(16)} ${String(p.minutes).padStart(3)}'  kondycja ${String(p.condition).padStart(3)}%  ${extras}`,
     );
   }
 }

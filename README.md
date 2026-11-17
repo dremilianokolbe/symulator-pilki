@@ -17,7 +17,35 @@ Wizja i wszystkie decyzje projektowe: [WIZJA_GRY.md](WIZJA_GRY.md).
 - polska relacja tekstowa,
 - skalibrowany na realnych średnich (patrz [docs/KALIBRACJA.md](docs/KALIBRACJA.md)).
 
-Następny etap: dane Euro 2016 (53 kadry, wyniki eliminacji) i kalibracja na prawdziwych meczach.
+**Etap 2: dane Euro 2016 (w toku).**
+
+- wyniki wszystkich meczów reprezentacji od 1872 i ranking Elo liczony z nich,
+- 267 meczów eliminacji i 51 meczów turnieju z Elo obu drużyn sprzed meczu,
+- 24 kadry finalistów (552 zawodników) z atrybutami wyliczanymi z danych,
+- kalibracja na prawdziwych meczach eliminacji: silnik przewiduje wyniki tak dobrze jak samo Elo.
+
+Brakuje: kadr 29 drużyn spoza turnieju, dokładnych pozycji (Wikipedia podaje tylko BR/OBR/POM/NAP),
+siły klubów z ClubElo (API było niedostępne; na razie szacunek siły ligi).
+
+## Dane i źródła
+
+- Wyniki i strzelcy: [martj42/international_results](https://github.com/martj42/international_results) (CC0).
+- Składy Euro 2016: Wikipedia, [UEFA Euro 2016 squads](https://en.wikipedia.org/wiki/UEFA_Euro_2016_squads) (CC BY-SA 4.0).
+- Siła klubów (planowane): [ClubElo](http://clubelo.com).
+
+```bash
+npm run dane:pobierz
+```
+
+```bash
+npm run dane:przetworz
+```
+
+Mecz z prawdziwymi kadrami (nazwy drużyn po angielsku, jak w danych):
+
+```bash
+npm run mecz -- --dom Poland --gosc Germany --neutralny
+```
 
 ## Uruchamianie
 

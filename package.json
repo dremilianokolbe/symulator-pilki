@@ -8,7 +8,10 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "mecz": "tsx scripts/mecz.ts",
-    "kalibracja": "tsx scripts/kalibracja.ts"
+    "kalibracja": "tsx scripts/kalibracja.ts",
+    "dane:pobierz": "bash scripts/dane/pobierz.sh",
+    "dane:przetworz": "tsx scripts/dane/przetworz.ts",
+    "kalibracja:euro": "tsx scripts/kalibracja-euro.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

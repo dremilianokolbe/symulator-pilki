@@ -19,11 +19,45 @@ Krzywa siły: **1 punkt OVR ≈ 20–28 punktów Elo**. Przy różnicy 10 punkt�
 przy 30 punktach (np. Niemcy vs Gibraltar) ~99% i strzela średnio ok. 5,3 gola. W eliminacjach
 Euro 2016 Gibraltar tracił średnio 5,6 gola na mecz.
 
+## Kalibracja na prawdziwych meczach: eliminacje Euro 2016
+
+Pełny wynik: [kalibracja-euro-wynik.txt](kalibracja-euro-wynik.txt). Uruchomienie: `npm run kalibracja:euro`.
+
+**Metoda:** 267 meczów eliminacji (wrzesień 2014 – październik 2015). Przed każdym meczem silnik
+zna tylko ranking Elo obu drużyn sprzed meczu (liczony z wszystkich meczów reprezentacji od 1872,
+`src/data/elo.ts`), zamieniony na OVR: `OVR = 70 + (Elo − 1700) / przelicznik`. Każdy mecz
+symulowany 80–100 razy. Porównanie z rzeczywistymi wynikami i z modelami odniesienia.
+
+| Model | Log-loss ↓ | Gole/mecz | Remisy | Różnica ≥3 |
+|---|---|---|---|---|
+| Rzeczywistość | – | 2,61 | 18,7% | 20,6% |
+| Częstości (bez wiedzy o sile) | 1,043 | – | – | – |
+| Samo Elo + prosty model remisów | 0,872 | – | – | – |
+| Silnik, 25 Elo/pkt | 0,917 | 3,51 | 16,5% | 37,5% |
+| Silnik, 35 Elo/pkt | 0,893 | 3,02 | 20,2% | 27,6% |
+| Silnik, 40 Elo/pkt | 0,880 | 2,91 | 21,5% | 24,1% |
+| **Silnik, 45 Elo/pkt (wybrany)** | **0,874** | 2,83 | 22,5% | 22,0% |
+| Silnik, 50 Elo/pkt | 0,890 | 2,78 | 23,5% | 19,9% |
+
+**Wniosek:** przy 45 Elo na punkt OVR silnik przewiduje wyniki praktycznie tak dobrze jak samo Elo
+(0,874 vs 0,872), a przy tym daje pełny mecz: strzelców, kartki, statystyki. OVR kadr wychodzi
+realistycznie: Niemcy ok. 82, San Marino ok. 54 (2014).
+
+Przedziały pewności (przy 40 Elo/pkt) są dobrze skalibrowane: gdy silnik daje gospodarzom 50%,
+wygrywali w 50%; przy 88% w 83%. Lekka nadmierna pewność zostaje tylko u wyraźnych faworytów.
+
+**Co jeszcze odstaje:** silnik daje ok. 8% za dużo goli (2,83 vs 2,61) i za dużo remisów (22,5%
+vs 18,7%). Kandydaci do poprawy: słabsze drużyny broniące się głęboko (taktyka AI) oraz mniejsza
+liczba goli w meczach reprezentacji niż w ligach.
+
+**Uwaga:** przelicznik dotyczy reprezentacji. Dla lig klubowych trzeba go wyznaczyć osobno
+(z ClubElo), bo różnice siły w lidze są mniejsze.
+
 ## Ograniczenia (uczciwie)
 
-- **Cele to orientacyjne średnie ligowe, nie dane z Euro 2016.** Prawdziwa kalibracja przyjdzie
-  z danymi: ok. 270 meczów eliminacji Euro 2016 z prawdziwymi kadrami. Mecze reprezentacji mają
-  zwykle trochę inne proporcje (mniej goli między równymi, więcej pogromów słabeuszy).
+- **Kalibracja ligowa opiera się na orientacyjnych średnich**, a nie na konkretnych meczach.
+  Kalibracja na prawdziwych meczach (wyżej) dotyczy na razie tylko reprezentacji i używa
+  wygenerowanych kadr o sile z Elo, a nie prawdziwych zawodników.
 - **Wynik zależy od próbki wygenerowanych drużyn.** Inna losowa liga przesuwa średnią goli o ok. ±0,1.
   Dlatego parametry są ustawione na środek przedziałów, a nie na ich krawędź.
 - **Przy małych różnicach (0–3 OVR) krzywa jest zaszumiona** przez losowy skład drużyn
