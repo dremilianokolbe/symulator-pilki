@@ -30,6 +30,25 @@ Wizja i wszystkie decyzje projektowe: [WIZJA_GRY.md](WIZJA_GRY.md).
 Brakuje: siły poszczególnych klubów z ClubElo (API niedostępne; na razie siła ligi + lista czołowych
 klubów), formy klubowej z sezonów 14/15 i 15/16.
 
+**Etap 3: rozgrywki Euro 2016 (tryb sandbox).**
+
+- eliminacje (9 grup, prawdziwy terminarz), tabele wg regulaminu UEFA, ranking 3. miejsc,
+- baraże (dwumecze, bramki na wyjeździe), losowanie turnieju z koszykami,
+- turniej na 24 drużyny: grupy, 4 najlepsze trzecie miejsca, drabinka 1/8 → finał,
+- pojedynczy przebieg z tabelami i strzelcami albo Monte Carlo z szansami każdej drużyny.
+
+Szczegóły i uproszczenia: [docs/ROZGRYWKI.md](docs/ROZGRYWKI.md).
+
+```bash
+npm run euro -- --raz
+```
+
+```bash
+npm run euro -- --symulacje 10000
+```
+
+Pełne Monte Carlo trwa długo (ok. 330 meczów na przebieg); najlepiej uruchamiać, gdy komputer nie jest zajęty.
+
 ## Dane i źródła
 
 - Wyniki i strzelcy: [martj42/international_results](https://github.com/martj42/international_results) (CC0).

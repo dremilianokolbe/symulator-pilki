@@ -79,6 +79,26 @@ describe('silnik meczu', () => {
     }
   });
 
+  it('rewanż rozstrzyga dwumecz: suma, bramki na wyjeździe, dogrywka, karne', () => {
+    const [home, away] = teams(72, 72, 4);
+    for (let s = 0; s < 300; s++) {
+      // Pierwszy mecz 1:1 => gospodarz rewanżu strzelił 1 na wyjeździe.
+      const r = simulateMatch({ seed: s, home, away, knockout: true, firstLeg: { homeGoals: 1, awayGoals: 1 } });
+      expect(r.winner).not.toBeNull();
+      const [h, a] = r.scoreAfter90;
+      if (!r.extraTime) {
+        // Bez dogrywki: dwumecz rozstrzygnięty po 90 minutach.
+        const decided = h !== a || a !== 1;
+        expect(decided).toBe(true);
+        if (h !== a) expect(r.winner).toBe(h > a ? 'home' : 'away');
+        else expect(r.winner).toBe(a > 1 ? 'away' : 'home'); // 0:0 => gospodarz (1 na wyjeździe), 2:2 => gość
+      } else {
+        // Dogrywka tylko przy 1:1 w rewanżu (wszystko równe).
+        expect([h, a]).toEqual([1, 1]);
+      }
+    }
+  });
+
   it('zawodnik z czerwoną kartką nie wraca na boisko', () => {
     const [home, away] = teams();
     for (let s = 0; s < 400; s++) {

@@ -6,14 +6,14 @@ Model                         Log-loss  Brier   Gole/mecz  Remisy   Różn.≥3
 ──────────────────────────────────────────────────────────────────────────────
 Częstości (bez wiedzy o sile)    1.043  0.633  
 Elo + prosty model remisów       0.866  0.493  
-Silnik, 40 Elo/pkt OVR           0.851  0.490       3.00   19.8%    26.5%   (62 s)
-Silnik, 45 Elo/pkt OVR           0.847  0.488       2.91   20.9%    23.9%   (96 s)
+Silnik, 40 Elo/pkt OVR           0.839  0.481       3.03   19.8%    27.0%   (58 s)
+Silnik, 45 Elo/pkt OVR           0.835  0.481       2.95   20.9%    24.1%   (49 s)
 
   Przedziały pewności (silnik 45 Elo/pkt): przewidziana szansa wygranej gospodarzy vs rzeczywistość
-    0.0%–20.0%   meczów  52: przewidziano  10.6%, było   9.6%
-   20.0%–40.0%   meczów  63: przewidziano  28.9%, było  27.0%
-   40.0%–60.0%   meczów  55: przewidziano  48.4%, było  45.5%
-   60.0%–80.0%   meczów  59: przewidziano  69.2%, było  62.7%
-   80.0%–100.0%  meczów  38: przewidziano  89.2%, było  86.8%
+    0.0%–20.0%   meczów  54: przewidziano  10.4%, było   7.4%
+   20.0%–40.0%   meczów  64: przewidziano  29.3%, było  25.0%
+   40.0%–60.0%   meczów  57: przewidziano  50.5%, było  49.1%
+   60.0%–80.0%   meczów  48: przewidziano  69.8%, było  64.6%
+   80.0%–100.0%  meczów  44: przewidziano  88.3%, było  86.4%
 
-Silnik, 50 Elo/pkt OVR           0.862  0.501       2.82   22.1%    21.4%   (74 s)
+Silnik, 50 Elo/pkt OVR           0.847  0.489       2.87   21.9%    22.3%   (47 s)

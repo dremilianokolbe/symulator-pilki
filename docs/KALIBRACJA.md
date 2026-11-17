@@ -54,12 +54,16 @@ z 1000 (wcześniej Gibraltar zaczynał eliminacje jak przeciętna drużyna).
 |---|---|---|---|---|
 | Rzeczywistość | – | 2,61 | 18,7% | 20,6% |
 | Samo Elo + prosty model remisów | 0,866 | – | – | – |
-| Silnik, 40 Elo/pkt | 0,851 | 3,00 | 19,8% | 26,5% |
-| **Silnik, 45 Elo/pkt (wybrany)** | **0,847** | 2,91 | 20,9% | 23,9% |
-| Silnik, 50 Elo/pkt | 0,862 | 2,82 | 22,1% | 21,4% |
+| Silnik, 40 Elo/pkt | 0,839 | 3,03 | 19,8% | 27,0% |
+| **Silnik, 45 Elo/pkt (wybrany)** | **0,835** | 2,95 | 20,9% | 24,1% |
+| Silnik, 50 Elo/pkt | 0,847 | 2,87 | 21,9% | 22,3% |
 
-**Silnik z prawdziwymi kadrami przewiduje wyniki lepiej niż samo Elo** (0,847 vs 0,866).
-Przedziały pewności są bardzo dobre: przewidziane 10,6% → było 9,6%, 48% → 46%, 89% → 87%.
+**Silnik z prawdziwymi kadrami przewiduje wyniki lepiej niż samo Elo** (0,835 vs 0,866).
+Przedziały pewności: przewidziane 10% → było 7%, 50% → 49%, 70% → 65%, 88% → 86%.
+
+Wyniki po poprawce wyboru składu (optymalny przydział zawodników do pozycji zamiast zachłannego;
+wcześniej np. Ronaldo potrafił trafić na prawą obronę) i automatycznym wyborze formacji.
+Przed poprawką: 0,847.
 
 **Uczciwe zastrzeżenie:** kadry 24 finalistów to składy z czerwca 2016, czyli wiedza sprzed
 turnieju, ale po eliminacjach (część powołań wynika z formy w eliminacjach). Dla pozostałych

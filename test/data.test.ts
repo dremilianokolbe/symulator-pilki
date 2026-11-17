@@ -3,6 +3,9 @@ import { parseCsv } from '../src/data/csv';
 import { deriveSquad, type SquadPlayer } from '../src/data/derive';
 import { EloTable, expectedScore, goalDiffMultiplier, kFactor } from '../src/data/elo';
 import { positionRating } from '../src/engine/attributes';
+import { createRng } from '../src/engine/rng';
+import { DEFAULT_TACTICS } from '../src/engine/types';
+import { buildTeamInput, generateTeam, maxAssignment } from '../src/generator/players';
 
 describe('CSV', () => {
   it('obsługuje cudzysłowy i przecinki w polach', () => {
@@ -44,6 +47,23 @@ describe('Elo', () => {
     t.update({ date: '2013-11-19', home: 'Nowa', away: 'Nowa2', homeScore: 0, awayScore: 0, tournament: 'Friendly', neutral: true });
     expect(t.get('Stara')).toBe(1500);
     expect(t.get('Nowa')).toBe(1000);
+  });
+});
+
+describe('wybór składu', () => {
+  it('algorytm węgierski maksymalizuje sumę, a nie bierze najlepszego po kolei', () => {
+    // Zachłannie: wiersz 0 wziąłby kolumnę 0 (9), wiersz 1 kolumnę 1 (1) => 10. Optymalnie 8 + 8 = 16.
+    expect(maxAssignment([[9, 8], [8, 1]])).toEqual([1, 0]);
+  });
+
+  it('gwiazda-napastnik gra w ataku, nie na obronie', () => {
+    const rng = createRng(3);
+    const { squad } = generateTeam(rng, { id: 'T', name: 'T', quality: 65 });
+    // Podmieniamy pierwszego napastnika na gwiazdę z wysokimi atrybutami.
+    const star = squad.find((p) => p.positions.ST === 100)!;
+    for (const k of Object.keys(star.attributes) as (keyof typeof star.attributes)[]) star.attributes[k] = Math.min(99, star.attributes[k] + 25);
+    const input = buildTeamInput('T', 'T', 'T', squad, { ...DEFAULT_TACTICS, formation: '4-4-2' });
+    expect(input.starters.find((s) => s.player === star)?.position).toBe('ST');
   });
 });
 

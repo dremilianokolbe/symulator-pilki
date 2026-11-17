@@ -127,8 +127,15 @@ export interface MatchContext {
   referee?: Referee;
   /** Waga meczu 0–100 (towarzyski ~10, eliminacje ~60, finał ~100). */
   importance?: number;
-  /** Mecz pucharowy: dogrywka i karne przy remisie. */
+  /** Mecz pucharowy: dogrywka i karne przy remisie (w rewanżu: przy remisie w dwumeczu). */
   knockout?: boolean;
+  /**
+   * Rewanż dwumeczu: gole z pierwszego meczu, przypisane do drużyn TEGO meczu
+   * (homeGoals = gole obecnego gospodarza, strzelone na wyjeździe w pierwszym meczu).
+   */
+  firstLeg?: { homeGoals: number; awayGoals: number };
+  /** Bramki na wyjeździe w dwumeczu (2016: tak, także w dogrywce). Domyślnie tak. */
+  awayGoalsRule?: boolean;
   /** Limit zmian (2016: 3). */
   maxSubs?: number;
 }

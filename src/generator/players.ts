@@ -140,26 +140,87 @@ export function generateTeam(rng: Rng, opts: SquadOptions): { squad: Player[]; i
   return { squad, input: buildTeamInput(opts.id, opts.name, opts.shortName ?? opts.name, squad, tactics) };
 }
 
-/** Wybiera najlepszą jedenastkę dla formacji (zachłannie: najpierw bramkarz, potem slot po slocie) i ławkę. */
+/**
+ * Wybiera najlepszą jedenastkę dla formacji: optymalny przydział zawodników do pozycji
+ * (maksymalna suma ocen, algorytm węgierski), żeby gwiazda nie trafiła na obcą pozycję
+ * tylko dlatego, że ta była wypełniana wcześniej. Reszta kadry to ławka.
+ */
 export function buildTeamInput(id: string, name: string, shortName: string, squad: Player[], tactics: Tactics, benchSize = 12): MatchTeamInput {
   const slots = FORMATIONS[tactics.formation];
+  if (squad.length < slots.length) throw new Error(`${name}: za mało zawodników na formację ${tactics.formation}`);
+  const rating = slots.map((position) => squad.map((p) => positionRating(p.attributes, position, p.positions[position] ?? 0)));
+  const assignment = maxAssignment(rating);
   const used = new Set<string>();
-  const starters = slots.map((position) => {
-    let best: Player | undefined;
-    let bestVal = -1;
-    for (const p of squad) {
-      if (used.has(p.id)) continue;
-      const v = positionRating(p.attributes, position, p.positions[position] ?? 0);
-      if (v > bestVal) {
-        bestVal = v;
-        best = p;
-      }
-    }
-    if (!best) throw new Error(`${name}: za mało zawodników na formację ${tactics.formation}`);
-    used.add(best.id);
-    return { player: best, position };
+  const starters = slots.map((position, i) => {
+    const player = squad[assignment[i]!]!;
+    used.add(player.id);
+    return { player, position };
   });
-  const bench = squad.filter((p) => !used.has(p.id)).slice(0, benchSize);
+  // Ławka: najpierw rezerwowy bramkarz, potem najlepsi wg najlepszej pozycji.
+  const best = (p: Player) => Math.max(...Object.entries(p.positions).map(([pos, f]) => positionRating(p.attributes, pos as Position, f ?? 0)));
+  const rest = squad.filter((p) => !used.has(p.id));
+  const backupGk = rest.filter((p) => (p.positions.GK ?? 0) >= 50).sort((a, b) => best(b) - best(a))[0];
+  const bench = [
+    ...(backupGk ? [backupGk] : []),
+    ...rest.filter((p) => p !== backupGk && (p.positions.GK ?? 0) < 50).sort((a, b) => best(b) - best(a)),
+  ].slice(0, benchSize);
   const captain = starters.reduce((a, b) => (b.player.attributes.leadership > a.player.attributes.leadership ? b : a));
   return { id, name, shortName, tactics, starters, bench, captainId: captain.player.id };
+}
+
+/**
+ * Algorytm węgierski: przydział wierszy (pozycje) do kolumn (zawodnicy) z maksymalną sumą.
+ * Zwraca dla każdego wiersza indeks kolumny. Wymaga liczby kolumn ≥ liczby wierszy.
+ */
+export function maxAssignment(score: number[][]): number[] {
+  const n = score.length;
+  const m = score[0]?.length ?? 0;
+  const maxVal = Math.max(...score.flat());
+  // Minimalizujemy koszt = maxVal − ocena. Indeksy od 1 (klasyczna implementacja O(n²m)).
+  const cost = (i: number, j: number) => maxVal - score[i - 1]![j - 1]!;
+  const u = new Array<number>(n + 1).fill(0);
+  const v = new Array<number>(m + 1).fill(0);
+  const p = new Array<number>(m + 1).fill(0);
+  const way = new Array<number>(m + 1).fill(0);
+  for (let i = 1; i <= n; i++) {
+    p[0] = i;
+    let j0 = 0;
+    const minv = new Array<number>(m + 1).fill(Infinity);
+    const used = new Array<boolean>(m + 1).fill(false);
+    do {
+      used[j0] = true;
+      const i0 = p[j0]!;
+      let delta = Infinity;
+      let j1 = 0;
+      for (let j = 1; j <= m; j++) {
+        if (used[j]) continue;
+        const cur = cost(i0, j) - u[i0]! - v[j]!;
+        if (cur < minv[j]!) {
+          minv[j] = cur;
+          way[j] = j0;
+        }
+        if (minv[j]! < delta) {
+          delta = minv[j]!;
+          j1 = j;
+        }
+      }
+      for (let j = 0; j <= m; j++) {
+        if (used[j]) {
+          u[p[j]!]! += delta;
+          v[j]! -= delta;
+        } else {
+          minv[j]! -= delta;
+        }
+      }
+      j0 = j1;
+    } while (p[j0] !== 0);
+    do {
+      const j1 = way[j0]!;
+      p[j0] = p[j1]!;
+      j0 = j1;
+    } while (j0);
+  }
+  const result = new Array<number>(n).fill(-1);
+  for (let j = 1; j <= m; j++) if (p[j]! > 0) result[p[j]! - 1] = j - 1;
+  return result;
 }

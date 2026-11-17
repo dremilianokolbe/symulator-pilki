@@ -3,12 +3,16 @@
  */
 import { deriveSquad, type SquadPlayer } from '../data/derive';
 import type { MatchTeamInput, Player, Tactics } from '../engine/types';
-import { DEFAULT_TACTICS } from '../engine/types';
+import { DEFAULT_TACTICS, type FormationId } from '../engine/types';
+import { positionRating } from '../engine/attributes';
 import { buildTeamInput } from '../generator/players';
 
 /** Punkty Elo na punkt OVR (z kalibracji na eliminacjach Euro 2016, docs/KALIBRACJA.md). */
 export const ELO_PER_OVR = 45;
 export const eloToOvr = (elo: number) => 70 + (elo - 1700) / ELO_PER_OVR;
+
+/** Formacje brane pod uwagę przy automatycznym wyborze. */
+const AUTO_FORMATIONS: FormationId[] = ['4-4-2', '4-3-3', '4-2-3-1', '4-1-4-1'];
 
 /** Kody FIFA finalistów (nazwy jak w danych). */
 export const EURO2016_CODES: Record<string, string> = {
@@ -60,7 +64,15 @@ export function buildEuroTeam(
   const code = EURO2016_CODES[team] ?? team.slice(0, 3).toUpperCase();
   const ovr = ovrOverride ?? eloToOvr(data.elo[team] ?? 1700);
   const squad = deriveSquad(players, { teamOvr: ovr, refDate: data.refDate ?? '2016-06-10', nationCode: code });
-  const input = buildTeamInput(code, TEAM_NAME_PL[team] ?? team, code, squad, { ...DEFAULT_TACTICS, ...tactics });
+  const build = (formation: FormationId) =>
+    buildTeamInput(code, TEAM_NAME_PL[team] ?? team, code, squad, { ...DEFAULT_TACTICS, ...tactics, formation: tactics.formation ?? formation });
+  // Bez narzuconej formacji: ta z czwórką obrońców (standard 2016), w której najlepsza jedenastka
+  // ma najwyższą sumę ocen. Trójkę z tyłu można ustawić ręcznie.
+  const strength = (input: MatchTeamInput) =>
+    input.starters.reduce((s, st) => s + positionRating(st.player.attributes, st.position, st.player.positions[st.position] ?? 0), 0);
+  const input = tactics.formation
+    ? build(tactics.formation)
+    : AUTO_FORMATIONS.map(build).reduce((a, b) => (strength(b) > strength(a) ? b : a));
   const captain = players.find((p) => p.captain);
   if (captain) input.captainId = `${code}-${captain.no}`;
   return { squad, input, ovr };

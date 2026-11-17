@@ -87,6 +87,24 @@ const BLOCK_PROB: Record<ShotKind, number> = {
   corner: 0.15, freeKick: 0.3, penalty: 0,
 };
 
+/** Pamięć podręczna średnich ważonych: atrybuty zawodnika są niezmienne (edycja tworzy nowy obiekt). */
+const avgCache = new WeakMap<Attributes, Map<Weights, number>>();
+function avg(attrs: Attributes, w: Weights): number {
+  let m = avgCache.get(attrs);
+  if (!m) {
+    m = new Map();
+    avgCache.set(attrs, m);
+  }
+  let v = m.get(w);
+  if (v === undefined) {
+    v = weightedAverage(attrs, w);
+    m.set(w, v);
+  }
+  return v;
+}
+
+const PENALTY_W: Weights = { penalties: 2, composure: 1 };
+
 // ---------------------------------------------------------------------------
 // Stan meczu
 // ---------------------------------------------------------------------------
@@ -324,7 +342,7 @@ function computeUnits(team: TeamState, ctx: MatchContext): Units {
     for (const ps of active) {
       const r = role[ps.position] ?? 0;
       if (r === 0) continue;
-      s += r * weightedAverage(ps.player.attributes, w) * effectiveness(ps) * (trait ? traitMult(ps, trait) : 1);
+      s += r * avg(ps.player.attributes, w) * effectiveness(ps) * (trait ? traitMult(ps, trait) : 1);
     }
     return s / nominal;
   };
@@ -334,13 +352,13 @@ function computeUnits(team: TeamState, ctx: MatchContext): Units {
     for (const ps of active) {
       const r = role[ps.position] ?? 0;
       if (r === 0) continue;
-      s += r * weightedAverage(ps.player.attributes, w) * effectiveness(ps);
+      s += r * avg(ps.player.attributes, w) * effectiveness(ps);
       n += r;
     }
     return n > 0 ? s / n : 30;
   };
   const gk = active.find((ps) => ps.position === 'GK');
-  const gkVal = (w: Weights) => (gk ? weightedAverage(gk.player.attributes, w) * effectiveness(gk) : 25);
+  const gkVal = (w: Weights) => (gk ? avg(gk.player.attributes, w) * effectiveness(gk) : 25);
 
   const comp = conditionsCompression(ctx);
   const squash = (v: number) => 65 + (v - 65) * comp;
@@ -420,7 +438,7 @@ function endPeriod(state: MatchState) {
   }
   if (state.period === 2) {
     state.scoreAfter90 = [...state.score];
-    if (ctx.knockout && state.score[0] === state.score[1]) {
+    if (ctx.knockout && decideWinner(state) === null) {
       state.extraTime = true;
       push(state, { kind: 'period', minute: 90, period: 'extraTimeStart' });
       state.added = 0;
@@ -441,8 +459,25 @@ function endPeriod(state: MatchState) {
     return;
   }
   push(state, { kind: 'period', minute: 120, period: 'extraTimeEnd' });
-  if (state.score[0] === state.score[1]) playShootout(state);
+  if (decideWinner(state) === null) playShootout(state);
   finish(state);
+}
+
+/**
+ * Zwycięzca bez serii karnych: wynik meczu albo (w rewanżu) suma dwumeczu,
+ * potem bramki na wyjeździe (liczone także w dogrywce, jak w 2016). null = nierozstrzygnięte.
+ */
+export function decideWinner(state: MatchState): Side | null {
+  const [h, a] = state.score;
+  const leg = state.ctx.firstLeg;
+  if (!leg) return h > a ? 'home' : a > h ? 'away' : null;
+  const aggHome = h + leg.homeGoals;
+  const aggAway = a + leg.awayGoals;
+  if (aggHome !== aggAway) return aggHome > aggAway ? 'home' : 'away';
+  if (state.ctx.awayGoalsRule === false) return null;
+  // Gospodarz rewanżu strzelał na wyjeździe w pierwszym meczu; gość – w tym meczu.
+  if (leg.homeGoals !== a) return leg.homeGoals > a ? 'home' : 'away';
+  return null;
 }
 
 function finish(state: MatchState) {
@@ -641,7 +676,7 @@ function resolveAttack(state: MatchState, x: TeamState, y: TeamState) {
 function pickWeighted(rng: Rng, players: PlayerState[], role: RoleTable, w: Weights, exclude?: PlayerState) {
   const pool = players.filter((ps) => ps !== exclude && (role[ps.position] ?? 0) > 0);
   if (pool.length === 0) return undefined;
-  return rng.weighted(pool, (ps) => (role[ps.position] ?? 0) * Math.pow(weightedAverage(ps.player.attributes, w) / 60, 2));
+  return rng.weighted(pool, (ps) => (role[ps.position] ?? 0) * Math.pow(avg(ps.player.attributes, w) / 60, 2));
 }
 
 function pickShooter(rng: Rng, x: TeamState, kind: AttackKind): PlayerState | undefined {
@@ -652,7 +687,7 @@ function pickShooter(rng: Rng, x: TeamState, kind: AttackKind): PlayerState | un
     const tr = ps.player.traits;
     let w: number;
     if (kind === 'cross') {
-      w = (HEADER_ROLE[ps.position] ?? 0) * Math.pow(weightedAverage(a, AERIAL_ATT_W) / 60, 2);
+      w = (HEADER_ROLE[ps.position] ?? 0) * Math.pow(avg(a, AERIAL_ATT_W) / 60, 2);
     } else if (kind === 'long') {
       w = (LONGSHOT_ROLE[ps.position] ?? 0) * Math.pow(a.longShots / 60, 2);
       if (tr.includes('shootsFromDistance')) w *= 1.8;
@@ -699,7 +734,7 @@ function takeShot(
   const a = shooter.player.attributes;
   const isHeader = kind === 'cross' || kind === 'corner';
   const skillW = isHeader ? HEADER_FINISH_W : kind === 'long' ? LONG_FINISH_W : kind === 'freeKick' ? FREEKICK_W : xg > 0.25 ? BIG_CHANCE_W : FINISH_W;
-  const skill = weightedAverage(a, skillW) * effectiveness(shooter);
+  const skill = avg(a, skillW) * effectiveness(shooter);
 
   const gk = goalkeeper(y);
   const gkSkill = isHeader ? y.units.gkShot * 0.6 + y.units.gkAir * 0.4 : y.units.gkShot;
@@ -794,7 +829,7 @@ function setPieceTaker(team: TeamState, preferredId: string | undefined, w: Weig
   let best: PlayerState | undefined;
   let bestVal = -1;
   for (const ps of pool) {
-    const v = weightedAverage(ps.player.attributes, w);
+    const v = avg(ps.player.attributes, w);
     if (v > bestVal) {
       bestVal = v;
       best = ps;
@@ -891,7 +926,7 @@ function replaceGoalkeeper(state: MatchState, team: TeamState) {
 function resolvePenalty(state: MatchState, x: TeamState, y: TeamState) {
   const { rng } = state;
   x.stats.penalties++;
-  const taker = setPieceTaker(x, x.input.penaltyTakerId, { penalties: 2, composure: 1 });
+  const taker = setPieceTaker(x, x.input.penaltyTakerId, PENALTY_W);
   if (!taker) return;
   const scored = rng.chance(penaltyProbability(state, taker, y, 0.76));
   taker.stats.shots++;
@@ -1090,8 +1125,8 @@ function decided(goals: { home: number; away: number }, round: number, lastKicke
 export function getResult(state: MatchState): MatchResult {
   const ticks = Math.max(1, state.tick);
   const fullMinutes = state.extraTime ? 120 : 90;
-  const [hg, ag] = state.score;
-  let winner: Side | null = hg > ag ? 'home' : ag > hg ? 'away' : null;
+  // W rewanżu „winner” to drużyna, która awansuje (suma dwumeczu, bramki na wyjeździe, karne).
+  let winner: Side | null = decideWinner(state);
   if (state.shootout) winner = state.shootout.winner;
 
   const players: PlayerMatchStats[] = [];
