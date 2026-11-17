@@ -11,7 +11,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createInterface } from 'node:readline';
 import { careerFlow } from '../src/career/flow';
-import { careerTeams, loadCareerConfig } from '../src/career/setup';
+import { careerTeams } from '../src/career/setup';
+import { loadCareerConfig, readEuro2016Files } from '../src/node/load';
 import { STYLE_PRESETS, type Answer, type Decision, type PlayerRow, type StylePreset } from '../src/career/types';
 import { POSITION_LABEL } from '../src/engine/attributes';
 import { FORMATIONS, type FormationId } from '../src/engine/types';
@@ -100,7 +101,7 @@ async function main() {
 }
 
 async function chooseTeam(): Promise<string> {
-  const teams = careerTeams();
+  const teams = careerTeams(readEuro2016Files());
   console.log(C.bold('\nWybierz reprezentację (ranking Elo, wrzesień 2014):\n'));
   teams.forEach((t, i) => {
     const cell = `${String(i + 1).padStart(2)}. ${(TEAM_NAME_PL[t.team] ?? t.team).padEnd(22)} ${t.elo}`;

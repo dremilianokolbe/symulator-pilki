@@ -1,25 +1,18 @@
-/** Przygotowanie konfiguracji kariery z danych Euro 2016. */
-import { readFileSync } from 'node:fs';
-import type { SquadPlayer } from '../data/derive';
-import { loadEuroWorld } from '../scenarios/euro2016/world';
+/** Przygotowanie konfiguracji kariery z danych Euro 2016. Bez zależności od Node. */
+import type { Euro2016Files, LoadedWorld } from '../scenarios/euro2016/world';
 import type { CareerConfig } from './flow';
 
-export function loadCareerConfig(team: string, seed: number, dir = 'data/processed/euro2016'): CareerConfig {
-  const { world } = loadEuroWorld(dir);
-  const squads = JSON.parse(readFileSync(`${dir}/kadry-pelne.json`, 'utf8')) as SquadPlayer[];
-  const reserves = JSON.parse(readFileSync(`${dir}/rezerwy.json`, 'utf8')) as SquadPlayer[];
-  const elo = JSON.parse(readFileSync(`${dir}/elo.json`, 'utf8')) as Record<string, Record<string, number>>;
+export function careerConfig(files: Euro2016Files, loaded: LoadedWorld, team: string, seed: number): CareerConfig {
   return {
     team,
     seed,
-    world,
-    squads: [...squads, ...reserves].filter((p) => p.team === team),
-    eloQualifying: elo['2014-09-01']!,
-    eloFinals: elo['2016-06-01']!,
+    world: loaded.world,
+    squads: [...files.squads, ...files.reserves].filter((p) => p.team === team),
+    eloQualifying: files.elo['2014-09-01']!,
+    eloFinals: files.elo['2016-06-01']!,
   };
 }
 
-export function careerTeams(dir = 'data/processed/euro2016'): { team: string; elo: number }[] {
-  const elo = JSON.parse(readFileSync(`${dir}/elo.json`, 'utf8')) as Record<string, Record<string, number>>;
-  return Object.entries(elo['2014-09-01']!).map(([team, e]) => ({ team, elo: e })).sort((a, b) => b.elo - a.elo);
+export function careerTeams(files: Pick<Euro2016Files, 'elo'>): { team: string; elo: number }[] {
+  return Object.entries(files.elo['2014-09-01']!).map(([team, e]) => ({ team, elo: e })).sort((a, b) => b.elo - a.elo);
 }

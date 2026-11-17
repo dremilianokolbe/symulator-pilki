@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { careerFlow, type CareerSummary } from '../src/career/flow';
-import { loadCareerConfig } from '../src/career/setup';
+import { loadCareerConfig } from '../src/node/load';
 import type { Answer, Decision } from '../src/career/types';
 
 /** Automatyczny gracz: pierwsza opcja, sugestie asystenta, mecze do końca. */

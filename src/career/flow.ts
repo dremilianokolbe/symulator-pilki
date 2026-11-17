@@ -34,6 +34,8 @@ export interface CareerConfig {
   squads: SquadPlayer[];
   eloQualifying: Record<string, number>;
   eloFinals: Record<string, number>;
+  /** Podgląd stanu kariery dla interfejsu (zaufanie, media, bilans) – ustawiany przez przebieg. */
+  expose?: { state?: CareerState };
 }
 
 export interface CareerSummary {
@@ -51,6 +53,7 @@ export function* careerFlow(cfg: CareerConfig): Generator<Decision, CareerSummar
   const rng = createRng(cfg.seed);
   const worldRng = createRng(cfg.seed * 7 + 1);
   const state = initState(cfg, rng);
+  if (cfg.expose) cfg.expose.state = state;
 
   // -------------------------------------------------------------------------
   // Start: przywitanie i sztab
@@ -629,7 +632,8 @@ function* liveMatch(state: CareerState, match: MatchState, userSide: Side, home:
     }
     const minute = match.minute;
     if (DECISION_MINUTES.includes(minute) && match.added === 0 && lastStop !== minute) stop = true;
-    if (events.some((e) => e.kind === 'period' && (e.period === 'halftime' || e.period === 'extraTimeStart'))) stop = true;
+    const pause = events.find((e) => e.kind === 'period' && (e.period === 'halftime' || e.period === 'extraTimeStart'));
+    if (pause) stop = true;
     if (match.finished || toEnd || !stop) continue;
     lastStop = minute;
 
@@ -638,7 +642,7 @@ function* liveMatch(state: CareerState, match: MatchState, userSide: Side, home:
       const answer = yield {
         kind: 'live',
         title: `${pl(home)} – ${pl(away)}`,
-        minuteLabel: match.added ? `${match.minute}+${match.added}'` : `${match.minute}'`,
+        minuteLabel: pause?.kind === 'period' ? (pause.period === 'halftime' ? 'Przerwa' : 'Przed dogrywką') : match.added ? `${match.minute}+${match.added}'` : `${match.minute}'`,
         score: [...match.score] as [number, number],
         lines: buffer,
         onPitch: team.active.map((ps) => ({ ...row(state, ps.player), slot: ps.position, condition: Math.round(ps.condition) })),

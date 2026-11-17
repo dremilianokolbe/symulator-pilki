@@ -11,7 +11,8 @@ import { fileURLToPath } from 'node:url';
 import { isMainThread, parentPort, Worker, workerData } from 'node:worker_threads';
 import { createRng } from '../src/engine/rng';
 import { runEuro2016, STAGE_ORDER, type EuroRun, type Stage } from '../src/scenarios/euro2016/tournament';
-import { loadEuroWorld, plName } from '../src/scenarios/euro2016/world';
+import { loadEuroWorld } from '../src/node/load';
+import { plName } from '../src/scenarios/euro2016/world';
 
 interface Job {
   from: number;

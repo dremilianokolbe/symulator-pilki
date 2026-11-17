@@ -1,10 +1,17 @@
-/** Budowa świata Euro 2016 z przetworzonych danych (kadry, Elo, terminarze). */
-import { readFileSync } from 'node:fs';
+/** Budowa świata Euro 2016 z przetworzonych danych (kadry, Elo, terminarze). Bez zależności od Node. */
 import type { SquadPlayer } from '../../data/derive';
 import type { MatchTeamInput, Player } from '../../engine/types';
 import { buildEuroTeam, TEAM_NAME_PL } from '../euro2016';
 import { finalsGroups, qualifyingGroups, type EuroMatch } from './data';
 import type { EuroWorld } from './tournament';
+
+/** Przetworzone dane scenariusza (data/processed/euro2016). */
+export interface Euro2016Files {
+  squads: SquadPlayer[];
+  reserves: SquadPlayer[];
+  elo: Record<string, Record<string, number>>;
+  matches: EuroMatch[];
+}
 
 export interface LoadedWorld {
   world: EuroWorld;
@@ -13,10 +20,8 @@ export interface LoadedWorld {
   realMatches: EuroMatch[];
 }
 
-export function loadEuroWorld(dir = 'data/processed/euro2016'): LoadedWorld {
-  const squads = JSON.parse(readFileSync(`${dir}/kadry-pelne.json`, 'utf8')) as SquadPlayer[];
-  const elo = JSON.parse(readFileSync(`${dir}/elo.json`, 'utf8')) as Record<string, Record<string, number>>;
-  const realMatches = JSON.parse(readFileSync(`${dir}/mecze.json`, 'utf8')) as EuroMatch[];
+export function buildEuroWorld(files: Euro2016Files): LoadedWorld {
+  const { squads, elo, matches } = files;
   const teams = Object.keys(elo['2014-09-01']!);
   const players = new Map<string, Player>();
 
@@ -35,11 +40,11 @@ export function loadEuroWorld(dir = 'data/processed/euro2016'): LoadedWorld {
       qualifyingTeams: build(elo['2014-09-01']!, '2015-06-01'),
       finalsTeams: build(elo['2016-06-01']!, '2016-06-10'),
       eloStart: elo['2014-09-01']!,
-      qualifyingGroups: qualifyingGroups(realMatches),
-      realFinalsGroups: finalsGroups(realMatches),
+      qualifyingGroups: qualifyingGroups(matches),
+      realFinalsGroups: finalsGroups(matches),
     },
     players,
-    realMatches,
+    realMatches: matches,
   };
 }
 

@@ -60,6 +60,25 @@ Szczegóły: [docs/KARIERA.md](docs/KARIERA.md).
 npm run kariera
 ```
 
+**Etap 5: aplikacja (PWA).**
+
+Kariera selekcjonera i symulacje Euro 2016 w przeglądarce, mobile-first, tryb jasny i ciemny.
+Cała logika gry działa w Web Workerze (ten sam kod co w terminalu), Monte Carlo na kilku workerach
+naraz, zapis kariery w przeglądarce (seed + decyzje), tryb offline po zainstalowaniu.
+
+```bash
+npm run app
+```
+
+Serwer pokazuje adres w sieci lokalnej (np. `http://192.168.x.x:5173`) – telefon w tej samej sieci
+Wi-Fi może z niego grać. Instalacja na ekranie głównym i tryb offline wymagają HTTPS, czyli hostingu.
+
+```bash
+npm run app:build
+```
+
+Wersja produkcyjna trafia do `dist/` (pliki statyczne, do wrzucenia na dowolny hosting).
+
 ## Dane i źródła
 
 - Wyniki i strzelcy: [martj42/international_results](https://github.com/martj42/international_results) (CC0).
