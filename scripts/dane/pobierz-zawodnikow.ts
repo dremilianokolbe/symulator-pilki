@@ -137,10 +137,8 @@ for (const line of squadsWikitext.split('\n')) {
 
 const OUT = 'data/raw/wikipedia/infoboksy.json';
 const infoboxes: Record<string, { title: string; infobox: string | null }> = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : {};
-// Finaliści mają składy z Euro; z puli Wikidata potrzebne są tylko drużyny spoza turnieju.
-const FINALISTS = new Set(['France', 'Romania', 'Albania', 'Switzerland', 'England', 'Russia', 'Wales', 'Slovakia', 'Germany', 'Ukraine', 'Poland', 'Northern Ireland', 'Spain', 'Czech Republic', 'Turkey', 'Croatia', 'Belgium', 'Italy', 'Republic of Ireland', 'Sweden', 'Portugal', 'Iceland', 'Austria', 'Hungary']);
-const nonFinalistPool = pool.filter((p) => !FINALISTS.has(p.team));
-const allTitles = [...new Set([...finalistTitles, ...nonFinalistPool.map((p) => p.title)])].filter((t) => !(t in infoboxes));
+// Cała pula (także szerokie kadry finalistów – do powołań w karierze).
+const allTitles = [...new Set([...finalistTitles, ...pool.map((p) => p.title)])].filter((t) => !(t in infoboxes));
 console.log(`Infoboksy do pobrania: ${allTitles.length} (finaliści: ${finalistTitles.length})`);
 
 function extractInfobox(text: string): string | null {

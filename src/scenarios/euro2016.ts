@@ -77,3 +77,38 @@ export function buildEuroTeam(
   if (captain) input.captainId = `${code}-${captain.no}`;
   return { squad, input, ovr };
 }
+
+/** Narzędnik („z kim?”): „remis z Niemcami”. */
+export const TEAM_NAME_PL_WITH: Record<string, string> = {
+  France: 'Francją', Romania: 'Rumunią', Albania: 'Albanią', Switzerland: 'Szwajcarią', England: 'Anglią',
+  Russia: 'Rosją', Wales: 'Walią', Slovakia: 'Słowacją', Germany: 'Niemcami', Ukraine: 'Ukrainą', Poland: 'Polską',
+  'Northern Ireland': 'Irlandią Płn.', Spain: 'Hiszpanią', 'Czech Republic': 'Czechami', Turkey: 'Turcją',
+  Croatia: 'Chorwacją', Belgium: 'Belgią', Italy: 'Włochami', 'Republic of Ireland': 'Irlandią', Sweden: 'Szwecją',
+  Portugal: 'Portugalią', Iceland: 'Islandią', Austria: 'Austrią', Hungary: 'Węgrami', Andorra: 'Andorą',
+  Armenia: 'Armenią', Azerbaijan: 'Azerbejdżanem', Belarus: 'Białorusią', 'Bosnia and Herzegovina': 'Bośnią i Hercegowiną',
+  Bulgaria: 'Bułgarią', Cyprus: 'Cyprem', Denmark: 'Danią', Estonia: 'Estonią', 'Faroe Islands': 'Wyspami Owczymi',
+  Finland: 'Finlandią', Georgia: 'Gruzją', Gibraltar: 'Gibraltarem', Greece: 'Grecją', Israel: 'Izraelem',
+  Kazakhstan: 'Kazachstanem', Latvia: 'Łotwą', Liechtenstein: 'Liechtensteinem', Lithuania: 'Litwą',
+  Luxembourg: 'Luksemburgiem', Malta: 'Maltą', Moldova: 'Mołdawią', Montenegro: 'Czarnogórą', Netherlands: 'Holandią',
+  'North Macedonia': 'Macedonią', Norway: 'Norwegią', 'San Marino': 'San Marino', Scotland: 'Szkocją', Serbia: 'Serbią',
+  Slovenia: 'Słowenią',
+};
+
+/** Biernik („kogo?”): „pokonuje Hiszpanię”. */
+export const TEAM_NAME_PL_ACC: Record<string, string> = {
+  France: 'Francję', Romania: 'Rumunię', Albania: 'Albanię', Switzerland: 'Szwajcarię', England: 'Anglię',
+  Russia: 'Rosję', Wales: 'Walię', Slovakia: 'Słowację', Germany: 'Niemcy', Ukraine: 'Ukrainę', Poland: 'Polskę',
+  'Northern Ireland': 'Irlandię Płn.', Spain: 'Hiszpanię', 'Czech Republic': 'Czechy', Turkey: 'Turcję',
+  Croatia: 'Chorwację', Belgium: 'Belgię', Italy: 'Włochy', 'Republic of Ireland': 'Irlandię', Sweden: 'Szwecję',
+  Portugal: 'Portugalię', Iceland: 'Islandię', Austria: 'Austrię', Hungary: 'Węgry', Andorra: 'Andorę',
+  Armenia: 'Armenię', Azerbaijan: 'Azerbejdżan', Belarus: 'Białoruś', 'Bosnia and Herzegovina': 'Bośnię i Hercegowinę',
+  Bulgaria: 'Bułgarię', Cyprus: 'Cypr', Denmark: 'Danię', Estonia: 'Estonię', 'Faroe Islands': 'Wyspy Owcze',
+  Finland: 'Finlandię', Georgia: 'Gruzję', Gibraltar: 'Gibraltar', Greece: 'Grecję', Israel: 'Izrael',
+  Kazakhstan: 'Kazachstan', Latvia: 'Łotwę', Liechtenstein: 'Liechtenstein', Lithuania: 'Litwę',
+  Luxembourg: 'Luksemburg', Malta: 'Maltę', Moldova: 'Mołdawię', Montenegro: 'Czarnogórę', Netherlands: 'Holandię',
+  'North Macedonia': 'Macedonię', Norway: 'Norwegię', 'San Marino': 'San Marino', Scotland: 'Szkocję', Serbia: 'Serbię',
+  Slovenia: 'Słowenię',
+};
+
+export const plWith = (team: string) => TEAM_NAME_PL_WITH[team] ?? TEAM_NAME_PL[team] ?? team;
+export const plAcc = (team: string) => TEAM_NAME_PL_ACC[team] ?? TEAM_NAME_PL[team] ?? team;

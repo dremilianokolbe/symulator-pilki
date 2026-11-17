@@ -3,14 +3,16 @@
  * klub, kraj i liga → data/raw/wikidata/kluby-2015.json.
  * Uruchom: npx tsx scripts/dane/pobierz-kluby.ts
  */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 
-const FINALISTS = new Set(['France', 'Romania', 'Albania', 'Switzerland', 'England', 'Russia', 'Wales', 'Slovakia', 'Germany', 'Ukraine', 'Poland', 'Northern Ireland', 'Spain', 'Czech Republic', 'Turkey', 'Croatia', 'Belgium', 'Italy', 'Republic of Ireland', 'Sweden', 'Portugal', 'Iceland', 'Austria', 'Hungary']);
+const OUT = 'data/raw/wikidata/kluby-2015.json';
+const done: Record<string, unknown> = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : {};
 const pool = (JSON.parse(readFileSync('data/raw/wikidata/kadry-2014-16.json', 'utf8')) as { players: { team: string; wikidata: string }[] }).players;
-const qids = [...new Set(pool.filter((p) => !FINALISTS.has(p.team)).map((p) => p.wikidata))];
+// Cała pula (także szerokie kadry finalistów); pomijamy już pobranych.
+const qids = [...new Set(pool.map((p) => p.wikidata))].filter((q) => !(q in done));
 console.log(`Zawodników do sprawdzenia: ${qids.length}`);
 
-const out: Record<string, { club: string; country: string; league: string | null; start: string | null }[]> = {};
+const out = done as Record<string, { club: string; country: string; league: string | null; start: string | null }[]>;
 for (let i = 0; i < qids.length; i += 150) {
   const batch = qids.slice(i, i + 150);
   const query = `
@@ -50,5 +52,5 @@ SELECT ?p ?clubLabel ?countryLabel ?leagueLabel ?start WHERE {
   console.log(`  ${Math.min(i + 150, qids.length)}/${qids.length}`);
   await new Promise((r) => setTimeout(r, 2000));
 }
-writeFileSync('data/raw/wikidata/kluby-2015.json', JSON.stringify(out, null, 1));
+writeFileSync(OUT, JSON.stringify(out, null, 1));
 console.log(`Zawodnicy z klubem: ${Object.keys(out).length}/${qids.length}`);

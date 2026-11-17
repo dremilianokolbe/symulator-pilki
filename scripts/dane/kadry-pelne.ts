@@ -76,8 +76,9 @@ const QUOTA: { group: (pos: Position) => boolean; n: number }[] = [
 ];
 
 const byTeam = new Map<string, typeof wd.players>();
+const reserves: SquadPlayer[] = [];
+const RESERVES = 17;
 for (const p of wd.players) {
-  if (FINALIST_TEAMS.has(p.team)) continue;
   const list = byTeam.get(p.team) ?? [];
   if (!list.some((x) => x.title === p.title)) list.push(p);
   byTeam.set(p.team, list);
@@ -115,6 +116,17 @@ for (const [team, pool] of [...byTeam].sort()) {
   }
 
   candidates.sort((a, b) => b.score - a.score);
+  const addReserves = (pickFrom: typeof candidates, firstNo: number) =>
+    pickFrom.slice(0, RESERVES).forEach((c, i) => {
+      const { score: _s, ...rest } = c;
+      reserves.push({ ...rest, no: firstNo + i, source: 'pula' });
+    });
+  if (FINALIST_TEAMS.has(team)) {
+    // Finaliści: skład z Euro już jest; rezerwy to pozostali zawodnicy kadry 2014–16.
+    const inSquad = new Set(finalists.filter((f) => f.team === team).map((f) => f.name));
+    addReserves(candidates.filter((c) => !inSquad.has(c.name)), 24);
+    continue;
+  }
   const chosen = new Set<(typeof candidates)[number]>();
   for (const q of QUOTA) {
     for (const c of candidates.filter((c) => q.group(c.primary!)).slice(0, q.n)) chosen.add(c);
@@ -129,11 +141,14 @@ for (const [team, pool] of [...byTeam].sort()) {
     const { score: _score, ...rest } = p;
     result.push({ ...rest, no: i + 1, captain: p === captain });
   });
+  addReserves(candidates.filter((c) => !chosen.has(c)), 24);
   const gk = squad.filter((p) => p.pos === 'GK').length;
   report.push(`${team} ${squad.length} (BR ${gk}, pula ${candidates.length})`);
 }
 
-console.log(`Pozostałe drużyny: ${byTeam.size}`);
+console.log(`Pozostałe drużyny: ${byTeam.size - FINALIST_TEAMS.size}`);
 console.log(report.join(', '));
 writeFileSync('data/processed/euro2016/kadry-pelne.json', JSON.stringify(result, null, 1));
+writeFileSync('data/processed/euro2016/rezerwy.json', JSON.stringify(reserves, null, 1));
+console.log(`Rezerwy: ${reserves.length} zawodników`);
 console.log(`Zapisano: ${result.length} zawodników, ${new Set(result.map((p) => p.team)).size} drużyn`);

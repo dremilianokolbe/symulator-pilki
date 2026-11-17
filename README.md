@@ -49,6 +49,17 @@ npm run euro -- --symulacje 10000
 
 Pełne Monte Carlo trwa długo (ok. 330 meczów na przebieg); najlepiej uruchamiać, gdy komputer nie jest zajęty.
 
+**Etap 4: kariera selekcjonera (terminal).**
+
+Dowolna z 54 reprezentacji, od września 2014 do końca Euro 2016: sztab, okna reprezentacyjne,
+powołania z szerokiej kadry, sparingi, konferencje, zdarzenia losowe, mecz na żywo z decyzjami,
+kartki, kontuzje, forma, morale, prawdziwe tytuły prasowe, zaufanie federacji i zwolnienie.
+Szczegóły: [docs/KARIERA.md](docs/KARIERA.md).
+
+```bash
+npm run kariera
+```
+
 ## Dane i źródła
 
 - Wyniki i strzelcy: [martj42/international_results](https://github.com/martj42/international_results) (CC0).
