@@ -21,16 +21,21 @@ Wizja i wszystkie decyzje projektowe: [WIZJA_GRY.md](WIZJA_GRY.md).
 
 - wyniki wszystkich meczów reprezentacji od 1872 i ranking Elo liczony z nich,
 - 267 meczów eliminacji i 51 meczów turnieju z Elo obu drużyn sprzed meczu,
-- 24 kadry finalistów (552 zawodników) z atrybutami wyliczanymi z danych,
-- kalibracja na prawdziwych meczach eliminacji: silnik przewiduje wyniki tak dobrze jak samo Elo.
+- kadry wszystkich 54 drużyn (1242 zawodników): 24 finalistów ze składów Euro 2016,
+  30 pozostałych wybranych z zawodników grających w kadrze w latach 2014–16,
+- dokładne pozycje (np. prawy obrońca, skrzydłowy) z infoboksów Wikipedii, kluby z sezonu 2014/15,
+- kalibracja na prawdziwych meczach eliminacji: silnik z prawdziwymi kadrami przewiduje wyniki
+  lepiej niż samo Elo (szczegóły w [docs/KALIBRACJA.md](docs/KALIBRACJA.md)).
 
-Brakuje: kadr 29 drużyn spoza turnieju, dokładnych pozycji (Wikipedia podaje tylko BR/OBR/POM/NAP),
-siły klubów z ClubElo (API było niedostępne; na razie szacunek siły ligi).
+Brakuje: siły poszczególnych klubów z ClubElo (API niedostępne; na razie siła ligi + lista czołowych
+klubów), formy klubowej z sezonów 14/15 i 15/16.
 
 ## Dane i źródła
 
 - Wyniki i strzelcy: [martj42/international_results](https://github.com/martj42/international_results) (CC0).
 - Składy Euro 2016: Wikipedia, [UEFA Euro 2016 squads](https://en.wikipedia.org/wiki/UEFA_Euro_2016_squads) (CC BY-SA 4.0).
+- Zawodnicy reprezentacji 2014–16 i ich kluby: [Wikidata](https://www.wikidata.org) (CC0).
+- Pozycje, daty urodzenia, kariera: infoboksy artykułów o zawodnikach z angielskiej Wikipedii (CC BY-SA 4.0).
 - Siła klubów (planowane): [ClubElo](http://clubelo.com).
 
 ```bash

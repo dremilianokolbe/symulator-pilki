@@ -1,0 +1,19 @@
+Kalibracja na eliminacjach Euro 2016: 267 meczów × 80 symulacji, kadry: prawdziwe
+
+Rzeczywistość: gole/mecz 2.61, remisy 18.7%, wygrane gospodarzy 43.8%, różnica ≥3 goli 20.6%
+
+Model                         Log-loss  Brier   Gole/mecz  Remisy   Różn.≥3
+──────────────────────────────────────────────────────────────────────────────
+Częstości (bez wiedzy o sile)    1.043  0.633  
+Elo + prosty model remisów       0.866  0.493  
+Silnik, 40 Elo/pkt OVR           0.851  0.490       3.00   19.8%    26.5%   (62 s)
+Silnik, 45 Elo/pkt OVR           0.847  0.488       2.91   20.9%    23.9%   (96 s)
+
+  Przedziały pewności (silnik 45 Elo/pkt): przewidziana szansa wygranej gospodarzy vs rzeczywistość
+    0.0%–20.0%   meczów  52: przewidziano  10.6%, było   9.6%
+   20.0%–40.0%   meczów  63: przewidziano  28.9%, było  27.0%
+   40.0%–60.0%   meczów  55: przewidziano  48.4%, było  45.5%
+   60.0%–80.0%   meczów  59: przewidziano  69.2%, było  62.7%
+   80.0%–100.0%  meczów  38: przewidziano  89.2%, było  86.8%
+
+Silnik, 50 Elo/pkt OVR           0.862  0.501       2.82   22.1%    21.4%   (74 s)

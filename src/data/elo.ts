@@ -14,6 +14,15 @@ export interface IntlMatch {
 }
 
 export const INITIAL_ELO = 1500;
+/**
+ * Reprezentacje debiutujące później (zwykle małe federacje: San Marino, Andorra, Gibraltar)
+ * startują niżej, żeby pierwsze mecze nie traktowały ich jak przeciętnej drużyny.
+ */
+export const INITIAL_ELO_LATE = 1200;
+export const LATE_DEBUT_FROM = '1950-01-01';
+/** Debiut po 2000 r. (np. Gibraltar 2013): start jeszcze niżej. */
+export const INITIAL_ELO_NEW = 1000;
+export const NEW_DEBUT_FROM = '2000-01-01';
 export const HOME_ADVANTAGE = 100;
 
 export function kFactor(tournament: string): number {
@@ -46,6 +55,11 @@ export class EloTable {
 
   /** Aktualizuje ranking po meczu; zwraca rankingi sprzed meczu. */
   update(m: IntlMatch): { home: number; away: number } {
+    for (const team of [m.home, m.away]) {
+      if (this.ratings.has(team)) continue;
+      const initial = m.date >= NEW_DEBUT_FROM ? INITIAL_ELO_NEW : m.date >= LATE_DEBUT_FROM ? INITIAL_ELO_LATE : INITIAL_ELO;
+      this.ratings.set(team, initial);
+    }
     const home = this.get(m.home);
     const away = this.get(m.away);
     const we = expectedScore(home, away, m.neutral);

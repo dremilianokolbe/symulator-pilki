@@ -22,6 +22,11 @@ export interface SquadPlayer {
   club: string;
   clubNation: string;
   captain: boolean;
+  /** Dokładne pozycje z infoboksu Wikipedii (jeśli są); inaczej zgrubne z `pos`. */
+  positions?: Partial<Record<Position, number>>;
+  primary?: Position;
+  /** Skąd zawodnik: skład Euro 2016 albo pula kadry 2014–16 (Wikidata + Wikipedia). */
+  source?: 'euro2016' | 'pula';
 }
 
 /**
@@ -31,8 +36,14 @@ export interface SquadPlayer {
 export const LEAGUE_STRENGTH: Record<string, number> = {
   ESP: 1, GER: 0.93, ENG: 0.93, ITA: 0.88, FRA: 0.8, POR: 0.72, RUS: 0.65, UKR: 0.6, NED: 0.6, BEL: 0.58,
   TUR: 0.56, WAL: 0.8, SUI: 0.5, GRE: 0.48, AUT: 0.45, CZE: 0.45, DEN: 0.44, ROU: 0.42, CRO: 0.42, SWE: 0.42,
-  POL: 0.4, SCO: 0.4, ISR: 0.4, CYP: 0.38, BLR: 0.36, NOR: 0.38, HUN: 0.34, SVK: 0.34, IRL: 0.28, NIR: 0.25,
+  POL: 0.4, SCO: 0.4, ISR: 0.4, CYP: 0.38, BLR: 0.36, NOR: 0.38, HUN: 0.34, SVK: 0.34, IRL: 0.28,
   ISL: 0.25, ALB: 0.25, USA: 0.4, CHN: 0.42, QAT: 0.32, KSA: 0.32, UAE: 0.32, JPN: 0.35, BRA: 0.5, ARG: 0.5,
+  SRB: 0.38, BUL: 0.33, SVN: 0.32, BIH: 0.28, KAZ: 0.33, AZE: 0.33, FIN: 0.27, GEO: 0.25, MDA: 0.22, ARM: 0.2,
+  LTU: 0.2, LVA: 0.2, EST: 0.18, MLT: 0.15, LUX: 0.15, LIE: 0.15, AND: 0.08, SMR: 0.05, GIB: 0.05, FRO: 0.12,
+  MKD: 0.22, MNE: 0.22, AUS: 0.33, KOR: 0.4, IRN: 0.3, MEX: 0.42, IND: 0.2, THA: 0.22,
+  // Niższe ligi i lokalne ligi brytyjskie.
+  ENG2: 0.6, ENG3: 0.38, ENG4: 0.25, SCO2: 0.15, NIR: 0.12, WAL_L: 0.12, GER2: 0.5, ITA2: 0.45, ESP2: 0.5,
+  FRA2: 0.42, SUI2: 0.25,
 };
 
 /** SZACUNEK: czołowe kluby Europy ok. 2015/16 (premia ponad siłę ligi). */
@@ -47,6 +58,14 @@ const ELITE_CLUBS: Record<string, number> = {
   'Fenerbahçe': 0.04, 'Beşiktaş': 0.04, 'CSKA Moscow': 0.06, 'Dynamo Kyiv': 0.06, 'Ajax': 0.08, 'PSV Eindhoven': 0.06,
   'Olympiacos': 0.08, 'Anderlecht': 0.04, 'Club Brugge': 0.04,
 };
+
+/** Grupa pozycji (GK/DF/MF/FW) dla dokładnej pozycji. */
+export function positionGroup(pos: Position): SquadPlayer['pos'] {
+  if (pos === 'GK') return 'GK';
+  if (['DC', 'DL', 'DR', 'WBL', 'WBR'].includes(pos)) return 'DF';
+  if (pos === 'ST') return 'FW';
+  return 'MF';
+}
 
 /** Znajomość pozycji przy zgrubnych pozycjach z Wikipedii (GK/DF/MF/FW). */
 const COARSE_POSITIONS: Record<SquadPlayer['pos'], { primary: Position; positions: Partial<Record<Position, number>> }> = {
@@ -99,8 +118,10 @@ export function deriveSquad(players: SquadPlayer[], opts: DeriveOptions): Player
     const quality = opts.teamOvr - 1.5 + 4 * z;
     const age = ageAt(p.birthDate, opts.refDate);
     const coarse = COARSE_POSITIONS[p.pos];
+    const primary = p.primary ?? coarse.primary;
+    const positions = p.positions && p.primary ? p.positions : coarse.positions;
     const rng = createRng(hash(p.name + p.birthDate));
-    const base = generatePlayer(rng, { id: `${opts.nationCode}-${p.no}`, position: coarse.primary, quality, age });
+    const base = generatePlayer(rng, { id: `${opts.nationCode}-${p.no}`, position: primary, quality, age });
     const a = { ...base.attributes };
     const pers = { ...base.personality };
 
@@ -147,7 +168,7 @@ export function deriveSquad(players: SquadPlayer[], opts: DeriveOptions): Player
       shortName: p.shortName,
       nation: opts.nationCode,
       age,
-      positions: coarse.positions,
+      positions,
       attributes: a,
       personality: pers,
     };

@@ -10,6 +10,7 @@ import { simulateMatch } from '../src/engine/match';
 import { createRng } from '../src/engine/rng';
 import type { MatchTeamInput, Player } from '../src/engine/types';
 import { generateTeam } from '../src/generator/players';
+import { buildEuroTeam, type Euro2016Data } from '../src/scenarios/euro2016';
 
 interface EuroMatch {
   date: string;
@@ -34,13 +35,18 @@ const matches = (JSON.parse(readFileSync('data/processed/euro2016/mecze.json', '
 /** Elo → OVR: 1700 Elo = 70 OVR, `perPoint` punktów Elo na punkt OVR. */
 const toOvr = (elo: number, perPoint: number) => 70 + (elo - 1700) / perPoint;
 
-// Każda drużyna ma stały „kształt” kadry (wygenerowany raz), przesuwany do aktualnej siły.
+// Każda drużyna ma stały „kształt” kadry, przesuwany do aktualnej siły z Elo.
+// --kadry: prawdziwe kadry (wyliczone atrybuty), inaczej kadry wygenerowane.
+const REAL = process.argv.includes('--kadry');
+const euroData: Euro2016Data | null = REAL
+  ? { squads: JSON.parse(readFileSync('data/processed/euro2016/kadry-pelne.json', 'utf8')), elo: {}, refDate: '2015-06-01' }
+  : null;
 const shapes = new Map<string, MatchTeamInput>();
 const shapeRng = createRng(54);
 function shape(team: string): MatchTeamInput {
   let s = shapes.get(team);
   if (!s) {
-    s = generateTeam(shapeRng, { id: team, name: team, quality: 70 }).input;
+    s = euroData ? buildEuroTeam(euroData, team, {}, 70).input : generateTeam(shapeRng, { id: team, name: team, quality: 70 }).input;
     shapes.set(team, s);
   }
   return s;
@@ -116,7 +122,7 @@ const eloModel = matches.map((m) => {
 });
 
 const pct = (v: number) => `${(v * 100).toFixed(1)}%`;
-console.log(`Kalibracja na eliminacjach Euro 2016: ${matches.length} meczów × ${SIMS} symulacji\n`);
+console.log(`Kalibracja na eliminacjach Euro 2016: ${matches.length} meczów × ${SIMS} symulacji, kadry: ${REAL ? "prawdziwe" : "wygenerowane"}\n`);
 console.log(`Rzeczywistość: gole/mecz ${actualGoals.toFixed(2)}, remisy ${pct(actualDraws)}, wygrane gospodarzy ${pct(actualHome)}, różnica ≥3 goli ${pct(actualBig)}\n`);
 console.log('Model                         Log-loss  Brier   Gole/mecz  Remisy   Różn.≥3');
 console.log('─'.repeat(78));

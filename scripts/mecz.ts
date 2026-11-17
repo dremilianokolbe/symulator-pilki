@@ -26,7 +26,7 @@ let home: { squad: Player[]; input: MatchTeamInput };
 let away: { squad: Player[]; input: MatchTeamInput };
 if (homeName && awayName) {
   const data: Euro2016Data = {
-    squads: JSON.parse(readFileSync('data/processed/euro2016/kadry.json', 'utf8')),
+    squads: JSON.parse(readFileSync('data/processed/euro2016/kadry-pelne.json', 'utf8')),
     elo: JSON.parse(readFileSync('data/processed/euro2016/elo.json', 'utf8'))['2016-06-01'],
   };
   home = buildEuroTeam(data, homeName);

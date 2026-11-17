@@ -39,9 +39,32 @@ symulowany 80–100 razy. Porównanie z rzeczywistymi wynikami i z modelami odni
 | **Silnik, 45 Elo/pkt (wybrany)** | **0,874** | 2,83 | 22,5% | 22,0% |
 | Silnik, 50 Elo/pkt | 0,890 | 2,78 | 23,5% | 19,9% |
 
-**Wniosek:** przy 45 Elo na punkt OVR silnik przewiduje wyniki praktycznie tak dobrze jak samo Elo
-(0,874 vs 0,872), a przy tym daje pełny mecz: strzelców, kartki, statystyki. OVR kadr wychodzi
-realistycznie: Niemcy ok. 82, San Marino ok. 54 (2014).
+**Wniosek (kadry wygenerowane):** przy 45 Elo na punkt OVR silnik przewiduje wyniki praktycznie
+tak dobrze jak samo Elo (0,874 vs 0,872), a przy tym daje pełny mecz: strzelców, kartki, statystyki.
+
+### Z prawdziwymi kadrami (wersja aktualna)
+
+Wynik: [kalibracja-euro-kadry.txt](kalibracja-euro-kadry.txt). Uruchomienie: `npm run kalibracja:euro -- --kadry`.
+
+Kadry wszystkich 54 drużyn z wyliczonymi atrybutami (dokładne pozycje, kluby, występy), siła kadry
+z Elo. Dodatkowo poprawione Elo: reprezentacje debiutujące po 1950 r. startują z 1200, po 2000 r.
+z 1000 (wcześniej Gibraltar zaczynał eliminacje jak przeciętna drużyna).
+
+| Model | Log-loss ↓ | Gole/mecz | Remisy | Różnica ≥3 |
+|---|---|---|---|---|
+| Rzeczywistość | – | 2,61 | 18,7% | 20,6% |
+| Samo Elo + prosty model remisów | 0,866 | – | – | – |
+| Silnik, 40 Elo/pkt | 0,851 | 3,00 | 19,8% | 26,5% |
+| **Silnik, 45 Elo/pkt (wybrany)** | **0,847** | 2,91 | 20,9% | 23,9% |
+| Silnik, 50 Elo/pkt | 0,862 | 2,82 | 22,1% | 21,4% |
+
+**Silnik z prawdziwymi kadrami przewiduje wyniki lepiej niż samo Elo** (0,847 vs 0,866).
+Przedziały pewności są bardzo dobre: przewidziane 10,6% → było 9,6%, 48% → 46%, 89% → 87%.
+
+**Uczciwe zastrzeżenie:** kadry 24 finalistów to składy z czerwca 2016, czyli wiedza sprzed
+turnieju, ale po eliminacjach (część powołań wynika z formy w eliminacjach). Dla pozostałych
+30 drużyn kadry są wybrane z zawodników grających w latach 2014–16. Wynik może być więc
+odrobinę zbyt optymistyczny.
 
 Przedziały pewności (przy 40 Elo/pkt) są dobrze skalibrowane: gdy silnik daje gospodarzom 50%,
 wygrywali w 50%; przy 88% w 83%. Lekka nadmierna pewność zostaje tylko u wyraźnych faworytów.

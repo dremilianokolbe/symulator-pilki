@@ -33,8 +33,17 @@ describe('Elo', () => {
   it('zwycięzca zyskuje tyle, ile traci przegrany', () => {
     const t = new EloTable();
     t.update({ date: '2015-01-01', home: 'A', away: 'B', homeScore: 2, awayScore: 0, tournament: 'Friendly', neutral: true });
-    expect(t.get('A') + t.get('B')).toBeCloseTo(3000);
-    expect(t.get('A')).toBeGreaterThan(1500);
+    // Debiut po 2000 r. => start z 1000 punktów.
+    expect(t.get('A') + t.get('B')).toBeCloseTo(2000);
+    expect(t.get('A')).toBeGreaterThan(1000);
+  });
+
+  it('starsze reprezentacje startują z 1500, debiutanci po 2000 r. z 1000', () => {
+    const t = new EloTable();
+    t.update({ date: '1900-01-01', home: 'Stara', away: 'Stara2', homeScore: 0, awayScore: 0, tournament: 'Friendly', neutral: true });
+    t.update({ date: '2013-11-19', home: 'Nowa', away: 'Nowa2', homeScore: 0, awayScore: 0, tournament: 'Friendly', neutral: true });
+    expect(t.get('Stara')).toBe(1500);
+    expect(t.get('Nowa')).toBe(1000);
   });
 });
 

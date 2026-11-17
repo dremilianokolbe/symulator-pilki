@@ -16,8 +16,13 @@ curl -sfL "https://en.wikipedia.org/w/index.php?title=UEFA_Euro_2016_squads&acti
 
 # Siła klubów (ClubElo) na początek eliminacji, koniec sezonu 14/15 i przed Euro
 for d in 2014-09-01 2015-06-01 2016-06-01; do
-  curl -sfL "http://api.clubelo.com/$d" -o "data/raw/clubelo/$d.csv"
+  curl -sfL --max-time 30 "http://api.clubelo.com/$d" -o "data/raw/clubelo/$d.csv" || echo "ClubElo niedostępne ($d), pomijam"
   sleep 1
 done
 
 ls -la data/raw/*
+
+# Zawodnicy 54 reprezentacji 2014–16 (Wikidata, CC0) i ich infoboksy (Wikipedia, CC BY-SA),
+# kluby w sezonie 2014/15 (Wikidata). Wymaga wcześniejszego `npm run dane:przetworz` (lista drużyn).
+npx tsx scripts/dane/pobierz-zawodnikow.ts
+npx tsx scripts/dane/pobierz-kluby.ts

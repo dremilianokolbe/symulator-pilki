@@ -10,7 +10,7 @@
     "mecz": "tsx scripts/mecz.ts",
     "kalibracja": "tsx scripts/kalibracja.ts",
     "dane:pobierz": "bash scripts/dane/pobierz.sh",
-    "dane:przetworz": "tsx scripts/dane/przetworz.ts",
+    "dane:przetworz": "tsx scripts/dane/przetworz.ts && tsx scripts/dane/kadry-pelne.ts",
     "kalibracja:euro": "tsx scripts/kalibracja-euro.ts"
   },
   "devDependencies": {
