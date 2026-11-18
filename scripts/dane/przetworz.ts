@@ -8,7 +8,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { parseCsv } from '../../src/data/csv';
 import type { SquadPlayer } from '../../src/data/derive';
-import { EloTable, toIntlMatches } from '../../src/data/elo';
+import { EloTable, officialMatches, toIntlMatches } from '../../src/data/elo';
 
 const RAW = 'data/raw';
 const OUT = 'data/processed/euro2016';
@@ -18,7 +18,8 @@ mkdirSync(OUT, { recursive: true });
 // Mecze + Elo
 // ---------------------------------------------------------------------------
 
-const matches = toIntlMatches(parseCsv(readFileSync(`${RAW}/international_results/results.csv`, 'utf8')));
+// Tylko mecze członków FIFA (bez Island Games itp.) – patrz officialMatches.
+const matches = officialMatches(toIntlMatches(parseCsv(readFileSync(`${RAW}/international_results/results.csv`, 'utf8'))));
 const START = '2014-08-01';
 const END = '2016-07-11';
 const elo = new EloTable();

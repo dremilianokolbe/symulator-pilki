@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { parseCsv } from '../src/data/csv';
 import { deriveSquad, type SquadPlayer } from '../src/data/derive';
-import { EloTable, expectedScore, goalDiffMultiplier, kFactor } from '../src/data/elo';
+import { EloTable, expectedScore, goalDiffMultiplier, kFactor, officialMatches } from '../src/data/elo';
 import { positionRating } from '../src/engine/attributes';
 import { createRng } from '../src/engine/rng';
 import { DEFAULT_TACTICS } from '../src/engine/types';
@@ -39,6 +39,19 @@ describe('Elo', () => {
     // Debiut po 2000 r. => start z 1000 punktów.
     expect(t.get('A') + t.get('B')).toBeCloseTo(2000);
     expect(t.get('A')).toBeGreaterThan(1000);
+  });
+
+  it('ranking pomija drużyny spoza FIFA i turnieje nieoficjalne', () => {
+    const m = (home: string, away: string, tournament: string) =>
+      ({ date: '2010-01-01', home, away, homeScore: 1, awayScore: 0, tournament, neutral: false });
+    const kept = officialMatches([
+      m('Gibraltar', 'Poland', 'UEFA Euro qualification'),
+      m('Gibraltar', 'Sark', 'Friendly'),               // Sark nie gra w oficjalnych rozgrywkach
+      m('Gibraltar', 'Bermuda', 'Island Games'),       // turniej amatorski
+      m('Bermuda', 'Jamaica', 'CONCACAF Gold Cup qualification'),
+      m('Poland', 'Bermuda', 'Friendly'),
+    ]);
+    expect(kept.map((x) => `${x.home}-${x.away}`)).toEqual(['Gibraltar-Poland', 'Bermuda-Jamaica', 'Poland-Bermuda']);
   });
 
   it('starsze reprezentacje startują z 1500, debiutanci po 2000 r. z 1000', () => {

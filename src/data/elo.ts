@@ -71,6 +71,28 @@ export class EloTable {
   }
 }
 
+/** Rozgrywki, w których grają wyłącznie członkowie FIFA / konfederacji. */
+const OFFICIAL_COMPETITION =
+  /FIFA World Cup|UEFA Euro|Copa América|African Cup of Nations|AFC Asian Cup|Gold Cup|CONCACAF|Oceania Nations Cup|Confederations Cup|UEFA Nations League/;
+/** Turnieje amatorskie i nieoficjalne: nie liczą się do rankingu, nawet z udziałem członków FIFA. */
+const UNOFFICIAL_TOURNAMENT = /Island Games|FIFI Wild Cup|CONIFA|ConIFA|Viva World Cup|Muratti|Inter Games|Niamh/i;
+
+/**
+ * Mecze do rankingu: obie drużyny są członkami (grały kiedykolwiek w oficjalnych eliminacjach
+ * albo turniejach) i mecz nie jest częścią turnieju nieoficjalnego.
+ * Bez tego np. Gibraltar przez 20 lat zbierał punkty na Island Games (Jersey, Sark, Szetlandy)
+ * i startował w eliminacjach Euro 2016 jak przeciętna drużyna.
+ */
+export function officialMatches(matches: IntlMatch[]): IntlMatch[] {
+  const members = new Set<string>();
+  for (const m of matches) {
+    if (!OFFICIAL_COMPETITION.test(m.tournament)) continue;
+    members.add(m.home);
+    members.add(m.away);
+  }
+  return matches.filter((m) => !UNOFFICIAL_TOURNAMENT.test(m.tournament) && members.has(m.home) && members.has(m.away));
+}
+
 export function toIntlMatches(rows: Record<string, string>[]): IntlMatch[] {
   return rows
     .filter((r) => r.home_score !== 'NA' && r.home_score !== '')

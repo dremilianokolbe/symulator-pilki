@@ -53,17 +53,19 @@ z 1000 (wcześniej Gibraltar zaczynał eliminacje jak przeciętna drużyna).
 | Model | Log-loss ↓ | Gole/mecz | Remisy | Różnica ≥3 |
 |---|---|---|---|---|
 | Rzeczywistość | – | 2,61 | 18,7% | 20,6% |
-| Samo Elo + prosty model remisów | 0,866 | – | – | – |
-| Silnik, 40 Elo/pkt | 0,839 | 3,03 | 19,8% | 27,0% |
-| **Silnik, 45 Elo/pkt (wybrany)** | **0,835** | 2,95 | 20,9% | 24,1% |
-| Silnik, 50 Elo/pkt | 0,847 | 2,87 | 21,9% | 22,3% |
+| Samo Elo + prosty model remisów | 0,861 | – | – | – |
+| Silnik, 40 Elo/pkt | 0,837 | 3,08 | 19,5% | 28,1% |
+| **Silnik, 45 Elo/pkt (wybrany)** | **0,826** | 2,98 | 20,4% | 25,0% |
+| Silnik, 50 Elo/pkt | 0,842 | 2,91 | 21,4% | 23,3% |
 
-**Silnik z prawdziwymi kadrami przewiduje wyniki lepiej niż samo Elo** (0,835 vs 0,866).
-Przedziały pewności: przewidziane 10% → było 7%, 50% → 49%, 70% → 65%, 88% → 86%.
+**Silnik z prawdziwymi kadrami przewiduje wyniki lepiej niż samo Elo** (0,826 vs 0,861).
+Przedziały pewności: przewidziane 10% → było 5%, 29% → 29%, 50% → 47%, 69% → 62%, 88% → 87%.
 
-Wyniki po poprawce wyboru składu (optymalny przydział zawodników do pozycji zamiast zachłannego;
-wcześniej np. Ronaldo potrafił trafić na prawą obronę) i automatycznym wyborze formacji.
-Przed poprawką: 0,847.
+Historia poprawek:
+- 0,847 – pierwsza wersja z prawdziwymi kadrami,
+- 0,835 – optymalny wybór składu (wcześniej np. Ronaldo potrafił trafić na prawą obronę) i formacji,
+- 0,826 – ranking Elo tylko z meczów członków FIFA, bez turniejów nieoficjalnych (wcześniej Gibraltar
+  zbierał punkty na Island Games i startował w eliminacjach z 1335 zamiast ok. 1020).
 
 **Uczciwe zastrzeżenie:** kadry 24 finalistów to składy z czerwca 2016, czyli wiedza sprzed
 turnieju, ale po eliminacjach (część powołań wynika z formy w eliminacjach). Dla pozostałych

@@ -35,7 +35,7 @@ export const pct = (v: number) => (v <= 0 ? '–' : v < 0.001 ? '<0,1%' : `${(v 
 import type { Answer } from '../../src/career/types';
 
 /** Wersja zapisu: zapis = seed + odpowiedzi, więc działa tylko z tą samą logiką gry. */
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 const KEY = 'selekcjoner:kariera';
 
 export interface CareerSave {
