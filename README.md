@@ -1,5 +1,7 @@
 # Symulator piłki nożnej
 
+**Zagraj: https://dremilianokolbe.github.io/symulator-pilki/** (na telefonie: „Dodaj do ekranu początkowego”, działa też offline).
+
 Osobisty symulator piłkarski w duchu Football Managera: bez meczu 2D, za to z realistycznym
 silnikiem statystycznym, historycznymi scenariuszami i światem, który reaguje na wyniki.
 Wizja i wszystkie decyzje projektowe: [WIZJA_GRY.md](WIZJA_GRY.md).
