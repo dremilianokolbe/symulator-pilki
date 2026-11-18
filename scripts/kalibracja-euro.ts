@@ -7,6 +7,7 @@
 import { readFileSync } from 'node:fs';
 import { expectedScore } from '../src/data/elo';
 import { simulateMatch } from '../src/engine/match';
+import { paramsFromArgs } from './params-cli';
 import { createRng } from '../src/engine/rng';
 import type { MatchTeamInput, Player } from '../src/engine/types';
 import { generateTeam } from '../src/generator/players';
@@ -29,6 +30,8 @@ const SIMS = argIdx > 0 ? Number(process.argv[argIdx + 1]) : 100;
 const gridIdx = process.argv.indexOf('--przeliczniki');
 const GRID = gridIdx > 0 ? process.argv[gridIdx + 1]!.split(',').map(Number) : [30, 40, 45];
 const DETAIL = GRID.includes(45) ? 45 : GRID[0]!;
+// --param klucz=wartość (można powtarzać): próba innych parametrów bez zmiany kodu.
+const params = paramsFromArgs();
 const matches = (JSON.parse(readFileSync('data/processed/euro2016/mecze.json', 'utf8')) as EuroMatch[])
   .filter((m) => m.tournament === 'UEFA Euro qualification');
 
@@ -73,33 +76,43 @@ interface Prediction {
   pA: number;
   goals: number;
   bigMargin: number;
+  homeGoals: number;
+  awayGoals: number;
 }
 
 function predict(m: EuroMatch, perPoint: number, matchIdx: number): Prediction {
   const home = shifted(shape(m.home), toOvr(m.eloHome, perPoint) - 70);
   const away = shifted(shape(m.away), toOvr(m.eloAway, perPoint) - 70);
-  let h = 0, d = 0, a = 0, goals = 0, big = 0;
+  let h = 0, d = 0, a = 0, goals = 0, big = 0, hGoals = 0;
   for (let s = 0; s < SIMS; s++) {
-    const r = simulateMatch({ seed: matchIdx * 1000 + s, home, away, neutral: m.neutral, importance: 60 });
+    const r = simulateMatch({ seed: matchIdx * 1000 + s, home, away, neutral: m.neutral, international: true, importance: 60 }, { params });
     const [hg, ag] = r.score;
     if (hg > ag) h++;
     else if (hg === ag) d++;
     else a++;
     goals += hg + ag;
+    hGoals += hg;
     if (Math.abs(hg - ag) >= 3) big++;
   }
-  return { pH: h / SIMS, pD: d / SIMS, pA: a / SIMS, goals: goals / SIMS, bigMargin: big / SIMS };
+  return {
+    pH: h / SIMS, pD: d / SIMS, pA: a / SIMS, goals: goals / SIMS, bigMargin: big / SIMS,
+    homeGoals: hGoals / SIMS, awayGoals: (goals - hGoals) / SIMS,
+  };
 }
 
 const outcome = (m: EuroMatch) => (m.homeScore > m.awayScore ? 'H' : m.homeScore === m.awayScore ? 'D' : 'A');
-const eps = 0.01;
 
-function score(preds: { pH: number; pD: number; pA: number }[]) {
+/**
+ * Log-loss i Brier. Częstości z symulacji wygładzamy (+0,5 do każdego wyniku), żeby wynik,
+ * który akurat nie padł w N próbach, nie dostawał zerowego prawdopodobieństwa.
+ */
+function score(preds: { pH: number; pD: number; pA: number }[], sims = 0) {
   let logLoss = 0;
   let brier = 0;
+  const smooth = (p: number) => (sims ? (p * sims + 0.5) / (sims + 1.5) : Math.max(0.01, p));
   preds.forEach((p, i) => {
     const o = outcome(matches[i]!);
-    const probs = { H: Math.max(eps, p.pH), D: Math.max(eps, p.pD), A: Math.max(eps, p.pA) };
+    const probs = { H: smooth(p.pH), D: smooth(p.pD), A: smooth(p.pA) };
     const total = probs.H + probs.D + probs.A;
     logLoss -= Math.log(probs[o] / total);
     brier += (p.pH - (o === 'H' ? 1 : 0)) ** 2 + (p.pD - (o === 'D' ? 1 : 0)) ** 2 + (p.pA - (o === 'A' ? 1 : 0)) ** 2;
@@ -134,7 +147,7 @@ line('Elo + prosty model remisów', score(eloModel));
 for (const perPoint of GRID) {
   const t0 = performance.now();
   const preds = matches.map((m, i) => predict(m, perPoint, i));
-  const s = score(preds);
+  const s = score(preds, SIMS);
   const goals = preds.reduce((acc, p) => acc + p.goals, 0) / preds.length;
   const draws = preds.reduce((acc, p) => acc + p.pD, 0) / preds.length;
   const big = preds.reduce((acc, p) => acc + p.bigMargin, 0) / preds.length;
@@ -150,6 +163,37 @@ for (const perPoint of GRID) {
       const real = idx.filter(([, i]) => outcome(matches[i]!) === 'H').length / idx.length;
       console.log(`  ${pct(lo).padStart(6)}–${pct(Math.min(hi, 1)).padEnd(7)} meczów ${String(idx.length).padStart(3)}: przewidziano ${pct(predicted).padStart(6)}, było ${pct(real).padStart(6)}`);
     }
+    printBuckets(preds);
     console.log();
+  }
+}
+
+/**
+ * Rozbicie według różnicy siły (Elo z atutem gospodarza): średnie gole faworyta i słabszego
+ * oraz wygrana/remis/porażka faworyta – rzeczywistość vs silnik.
+ */
+function printBuckets(preds: Prediction[]) {
+  console.log('\n  Według różnicy Elo (z atutem gospodarza): gole faworyta:słabszego, wygrana/remis/porażka faworyta');
+  console.log('  Różnica    meczów   rzeczywistość                silnik');
+  for (const [lo, hi] of [[0, 100], [100, 200], [200, 350], [350, 500], [500, 9999]] as const) {
+    const rows = matches.map((m, i) => {
+      const diff = m.eloHome + (m.neutral ? 0 : 100) - m.eloAway;
+      const favHome = diff >= 0;
+      const p = preds[i]!;
+      return {
+        diff: Math.abs(diff),
+        real: favHome ? [m.homeScore, m.awayScore] : [m.awayScore, m.homeScore],
+        sim: favHome ? [p.homeGoals, p.awayGoals] : [p.awayGoals, p.homeGoals],
+        simWDL: favHome ? [p.pH, p.pD, p.pA] : [p.pA, p.pD, p.pH],
+      };
+    }).filter((r) => r.diff >= lo && r.diff < hi);
+    if (!rows.length) continue;
+    const n = rows.length;
+    const mean = (f: (r: (typeof rows)[number]) => number) => rows.reduce((acc, r) => acc + f(r), 0) / n;
+    const rw = mean((r) => (r.real[0]! > r.real[1]! ? 1 : 0));
+    const rd = mean((r) => (r.real[0] === r.real[1] ? 1 : 0));
+    const real = `${mean((r) => r.real[0]!).toFixed(2)}:${mean((r) => r.real[1]!).toFixed(2)}  ${pct(rw)}/${pct(rd)}/${pct(1 - rw - rd)}`;
+    const sim = `${mean((r) => r.sim[0]!).toFixed(2)}:${mean((r) => r.sim[1]!).toFixed(2)}  ${pct(mean((r) => r.simWDL[0]!))}/${pct(mean((r) => r.simWDL[1]!))}/${pct(mean((r) => r.simWDL[2]!))}`;
+    console.log(`  ${`${lo}–${hi === 9999 ? '' : hi}`.padEnd(10)} ${String(n).padStart(5)}   ${real.padEnd(29)}${sim}`);
   }
 }

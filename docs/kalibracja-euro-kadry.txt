@@ -1,4 +1,4 @@
-Kalibracja na eliminacjach Euro 2016: 267 meczów × 80 symulacji, kadry: prawdziwe
+Kalibracja na eliminacjach Euro 2016: 267 meczów × 300 symulacji, kadry: prawdziwe
 
 Rzeczywistość: gole/mecz 2.61, remisy 18.7%, wygrane gospodarzy 43.8%, różnica ≥3 goli 20.6%
 
@@ -6,14 +6,22 @@ Model                         Log-loss  Brier   Gole/mecz  Remisy   Różn.≥3
 ──────────────────────────────────────────────────────────────────────────────
 Częstości (bez wiedzy o sile)    1.043  0.633  
 Elo + prosty model remisów       0.861  0.491  
-Silnik, 40 Elo/pkt OVR           0.837  0.477       3.08   19.5%    28.1%   (14 s)
-Silnik, 45 Elo/pkt OVR           0.826  0.474       2.98   20.4%    25.0%   (15 s)
+Silnik, 40 Elo/pkt OVR           0.827  0.476       2.93   19.1%    30.7%   (51 s)
+Silnik, 45 Elo/pkt OVR           0.825  0.477       2.79   20.2%    27.5%   (51 s)
 
   Przedziały pewności (silnik 45 Elo/pkt): przewidziana szansa wygranej gospodarzy vs rzeczywistość
-    0.0%–20.0%   meczów  57: przewidziano  10.0%, było   5.3%
-   20.0%–40.0%   meczów  62: przewidziano  29.3%, było  29.0%
-   40.0%–60.0%   meczów  53: przewidziano  50.5%, było  47.2%
-   60.0%–80.0%   meczów  47: przewidziano  69.1%, było  61.7%
-   80.0%–100.0%  meczów  48: przewidziano  88.5%, było  87.5%
+    0.0%–20.0%   meczów  66: przewidziano   9.3%, było  12.1%
+   20.0%–40.0%   meczów  55: przewidziano  28.7%, było  23.6%
+   40.0%–60.0%   meczów  51: przewidziano  50.6%, było  49.0%
+   60.0%–80.0%   meczów  43: przewidziano  68.8%, było  65.1%
+   80.0%–100.0%  meczów  52: przewidziano  88.7%, było  82.7%
 
-Silnik, 50 Elo/pkt OVR           0.842  0.486       2.91   21.4%    23.3%   (14 s)
+  Według różnicy Elo (z atutem gospodarza): gole faworyta:słabszego, wygrana/remis/porażka faworyta
+  Różnica    meczów   rzeczywistość                silnik
+  0–100         45   1.22:1.00  42.2%/33.3%/24.4% 1.25:1.04  40.5%/28.7%/30.9%
+  100–200       54   1.17:0.94  46.3%/27.8%/25.9% 1.52:0.89  51.2%/26.3%/22.5%
+  200–350       62   1.58:0.74  64.5%/19.4%/16.1% 1.81:0.70  62.5%/23.0%/14.6%
+  350–500       52   2.08:0.54  75.0%/11.5%/13.5% 2.37:0.52  76.5%/16.2%/7.3%
+  500–          54   3.43:0.33  90.7%/3.7%/5.6%   3.48:0.35  90.2%/7.8%/2.1%
+
+Silnik, 50 Elo/pkt OVR           0.837  0.484       2.70   21.1%    25.2%   (51 s)

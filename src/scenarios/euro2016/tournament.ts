@@ -118,7 +118,7 @@ export function* euro2016Flow(world: EuroWorld, rng: Rng, opts: EuroOptions = {}
     extra: Partial<MatchContext> = {},
   ): Generator<EuroHook, SimMatch, MatchResult | undefined> {
     const tournament = phase === 'finals' || phase === 'knockout' ? 'UEFA Euro' : 'UEFA Euro qualification';
-    const context = { neutral: f.neutral, importance: phase === 'qualifying' ? 60 : 85, ...extra };
+    const context = { neutral: f.neutral, international: true, importance: phase === 'qualifying' ? 60 : 85, ...extra };
     let result: MatchResult | undefined;
     if (user && (f.home === user || f.away === user)) {
       result = yield { kind: 'match', phase, fixture: f, context, teams };

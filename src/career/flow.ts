@@ -366,7 +366,7 @@ function* windowPrelude(state: CareerState, cfg: CareerConfig, rng: Rng, hook: E
         kind: 'match',
         phase: hook.phase === 'finals' ? 'finals' : 'qualifying',
         fixture: { date: friendlyDate, home: cfg.team, away: ans, neutral: hook.phase === 'finals' && cfg.team !== 'France', stage: 'TOW' },
-        context: { neutral: false, importance: 10 },
+        context: { neutral: false, international: true, importance: 10 },
         teams: hook.teams,
       };
       const res = yield* playUserMatch(state, cfg, rng, fake, true);
@@ -599,6 +599,9 @@ function scoutingReport(state: CareerState, opp: MatchTeamInput, oppName: string
   const diff = ovr(own) - ovr(opp);
   const lines = [`Analityk ${state.staff.analyst.name}:`];
   lines.push(`Rywal (${pl(oppName)}) gra ${opp.tactics.formation}. ${diff > 3 ? 'Jesteśmy faworytem.' : diff < -3 ? 'Rywal jest mocniejszy.' : 'Siły wyrównane.'}`);
+  // Komputer dopasowuje plan gry do różnicy sił (aiGamePlan w silniku).
+  if (diff > 6) lines.push('Spodziewamy się, że rywal cofnie się pod własną bramkę. Trzeba cierpliwości.');
+  else if (diff < -6) lines.push('Rywal będzie atakował od początku, a my dostaniemy szanse z kontry.');
   if (analyst >= 60) {
     const stars = [...opp.starters].sort((a, b) => positionRating(b.player.attributes, b.position, 100) - positionRating(a.player.attributes, a.position, 100)).slice(0, analyst >= 80 ? 3 : 2);
     lines.push(`Najgroźniejsi: ${stars.map((s) => `${s.player.shortName} (${POSITION_LABEL[s.position]})`).join(', ')}.`);

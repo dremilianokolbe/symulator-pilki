@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getResult, makeSubstitution, simulateMatch, startMatch, stepMinute } from '../src/engine/match';
+import { DEFAULT_PARAMS } from '../src/engine/params';
 import { createRng } from '../src/engine/rng';
 import type { MatchContext, MatchTeamInput } from '../src/engine/types';
 import { generateTeam } from '../src/generator/players';
@@ -52,6 +53,36 @@ describe('silnik meczu', () => {
         expect(r.events.filter((e) => e.kind === 'sub' && e.side === side).length).toBeLessThanOrEqual(3);
       }
     }
+  });
+
+  it('komputer cofa słabszą drużynę i ośmiela mocniejszą, ale nie rusza ustawienia gracza', () => {
+    const [strong, weak] = teams(80, 62, 7);
+    const ai = startMatch({ seed: 1, home: strong, away: weak });
+    expect(ai.teams.home.tactics.mentality).toBeGreaterThan(50);
+    expect(ai.teams.away.tactics.mentality).toBeLessThan(50);
+    expect(ai.teams.away.tactics.defensiveLine).toBeLessThan(50);
+    const manual = startMatch({ seed: 1, home: strong, away: weak }, { manualSides: ['away'] });
+    expect(manual.teams.away.tactics).toEqual(weak.tactics);
+  });
+
+  it('słabsza drużyna broniąca się nisko oddaje mniej strzałów', () => {
+    const [strong, weak] = teams(80, 62, 7);
+    const shots = (aiAdaptation: number) => {
+      let n = 0;
+      for (let s = 0; s < 300; s++) n += simulateMatch({ seed: s, home: strong, away: weak }, { params: { ...DEFAULT_PARAMS, aiAdaptation } }).stats.away.shots;
+      return n / 300;
+    };
+    expect(shots(150)).toBeLessThan(shots(0));
+  });
+
+  it('w meczach reprezentacji pada mniej goli niż w lidze', () => {
+    const [home, away] = teams();
+    const goals = (international: boolean) => {
+      let n = 0;
+      for (let s = 0; s < 400; s++) n += simulateMatch({ seed: s, home, away, international }).score.reduce((a, b) => a + b);
+      return n / 400;
+    };
+    expect(goals(true)).toBeLessThan(goals(false) * 0.95);
   });
 
   it('mocniejsza drużyna wygrywa wyraźnie częściej', () => {

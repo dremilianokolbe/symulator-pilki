@@ -2,59 +2,59 @@ Euro 2016: 300 symulacji (eliminacje + turniej) na 8 rdzeniach…
 
 Drużyna                   Awans  Baraże   1/8     1/4     1/2    Finał  Mistrz   Naprawdę
 ─────────────────────────────────────────────────────────────────────────────────────────
-Niemcy                     99,3%    0,7%   93,7%   70,3%   50,0%   32,7%   21,7%   1/2
-Francja                   100,0%       –   89,0%   55,7%   34,7%   22,0%   13,3%   finał
-Anglia                     95,0%   10,3%   81,7%   52,0%   33,3%   18,3%   10,7%   1/8
-Hiszpania                  98,0%    5,0%   86,7%   53,0%   30,3%   17,3%    9,3%   1/8
-Holandia                  100,0%    0,3%   84,7%   53,3%   32,0%   19,3%    8,7%   grupa el.
-Belgia                     94,3%    7,3%   79,3%   43,7%   22,7%   12,0%    6,7%   1/4
-Włochy                     95,0%    6,0%   78,7%   45,3%   24,0%   12,0%    5,0%   1/4
-Portugalia                 90,3%   11,7%   74,7%   42,3%   23,3%   10,3%    4,7%   MISTRZ
-Irlandia                   68,3%   28,0%   49,3%   24,3%   12,7%    6,7%    3,3%   1/8
-Ukraina                    90,3%   13,0%   67,0%   34,3%   17,7%    6,0%    2,7%   grupa
-Rosja                      88,3%   13,3%   60,7%   30,0%   11,3%    5,3%    2,0%   grupa
-Turcja                     60,0%   48,3%   35,0%   15,0%    6,3%    3,3%    2,0%   grupa
-Szwajcaria                 93,7%   13,3%   63,0%   28,3%   12,0%    5,3%    1,3%   1/8
-Chorwacja                  77,3%   20,7%   49,3%   20,3%    9,7%    4,3%    1,3%   1/8
-Szwecja                    85,0%   19,7%   55,0%   23,7%    7,0%    2,7%    1,3%   grupa
-Czechy                     87,3%   21,0%   63,0%   32,3%   14,7%    4,3%    1,0%   grupa
-Rumunia                    61,3%   25,3%   36,0%   15,7%    5,7%    1,7%    1,0%   grupa
-Bośnia i Hercegowina       82,0%   17,0%   54,0%   23,0%    9,3%    2,7%    0,7%   baraże
-Polska                     38,7%   22,3%   25,7%   11,3%    4,7%    2,0%    0,7%   1/4
-Serbia                     75,3%   26,0%   48,3%   15,3%    4,3%    1,7%    0,7%   grupa el.
-Słowacja                   33,3%   34,7%   21,3%    8,3%    3,7%    1,3%    0,7%   1/8
-Grecja                     81,3%   15,0%   40,0%   14,3%    6,0%    1,3%    0,3%   grupa el.
-Dania                      79,3%   24,3%   48,0%   15,7%    5,7%    1,0%    0,3%   baraże
-Austria                    46,0%   29,0%   27,7%   11,0%    4,3%    2,0%    0,3%   grupa
-Węgry                      62,0%   21,3%   36,0%   14,3%    4,0%    1,7%    0,3%   1/8
-Słowenia                   55,3%   37,3%   24,3%    7,0%    3,3%    1,0%       –   baraże
-Bułgaria                   52,0%   33,0%   18,3%    6,7%    1,3%    0,3%       –   grupa el.
-Szkocja                    43,3%   26,7%   23,3%    7,3%    1,3%    0,3%       –   grupa el.
-Walia                      31,0%   23,0%   11,7%    5,7%    1,3%    0,7%       –   1/2
-Finlandia                  48,7%   19,3%   13,7%    4,7%    0,7%       –       –   grupa el.
-Norwegia                   24,3%   21,3%   11,3%    4,3%    0,7%       –       –   baraże
-Albania                     5,3%    7,7%    2,7%    1,0%    0,7%       –       –   grupa
-Izrael                     42,0%   29,3%   15,3%    3,7%    0,3%    0,3%       –   grupa el.
-Czarnogóra                 27,3%   23,7%    9,7%    2,3%    0,3%       –       –   grupa el.
-Armenia                    17,0%   18,0%    5,0%    1,0%    0,3%       –       –   grupa el.
-Irlandia Płn.               5,3%    7,3%    2,7%    1,3%    0,3%       –       –   1/8
-Macedonia                  13,3%   19,3%    2,3%       –       –       –       –   grupa el.
-Białoruś                   10,0%   18,7%    2,0%       –       –       –       –   grupa el.
-Gruzja                      8,3%   15,7%    2,7%    0,7%       –       –       –   grupa el.
-Islandia                    6,3%   14,0%    2,3%    0,3%       –       –       –   1/4
-Mołdawia                    6,0%    6,0%    1,3%       –       –       –       –   grupa el.
-Estonia                     6,0%   12,0%    0,7%    0,3%       –       –       –   grupa el.
-Litwa                       5,7%   11,0%    1,7%    0,3%       –       –       –   grupa el.
-Cypr                        4,3%    8,7%    0,7%       –       –       –       –   grupa el.
-Azerbejdżan                 3,3%    5,7%    0,7%    0,3%       –       –       –   grupa el.
-Łotwa                       2,0%    5,7%       –       –       –       –       –   grupa el.
-Kazachstan                  0,7%    1,3%       –       –       –       –       –   grupa el.
-Gibraltar                   0,3%    0,7%       –       –       –       –       –   grupa el.
-Wyspy Owcze                 0,3%    0,3%       –       –       –       –       –   grupa el.
+Niemcy                    100,0%       –   95,7%   68,0%   50,3%   32,7%   22,3%   1/2
+Francja                   100,0%       –   91,0%   57,3%   32,0%   19,0%   12,7%   finał
+Anglia                     97,3%   12,3%   86,7%   55,0%   29,3%   18,3%    9,3%   1/8
+Belgia                     95,0%    6,7%   79,3%   50,7%   28,0%   16,3%    9,0%   1/4
+Holandia                  100,0%    0,3%   88,7%   54,3%   31,3%   18,3%    8,7%   grupa el.
+Włochy                     97,0%    5,7%   81,7%   49,3%   30,0%   15,0%    7,7%   1/4
+Hiszpania                  97,3%    3,0%   83,3%   50,3%   26,7%   13,0%    6,7%   1/8
+Portugalia                 94,3%   13,0%   77,3%   40,0%   19,3%    9,0%    4,3%   MISTRZ
+Czechy                     91,7%   22,0%   63,3%   32,7%   17,0%    7,0%    2,7%   grupa
+Ukraina                    92,7%    8,7%   67,0%   33,3%   12,7%    6,7%    2,7%   grupa
+Dania                      75,0%   25,7%   44,3%   19,3%    8,0%    3,3%    2,0%   baraże
+Turcja                     59,3%   49,3%   40,0%   16,7%    8,0%    4,3%    2,0%   grupa
+Irlandia                   71,3%   27,0%   52,0%   24,0%   13,7%    6,0%    1,7%   1/8
+Słowacja                   34,0%   36,3%   20,7%    9,0%    4,3%    1,7%    1,3%   1/8
+Rosja                      91,0%    9,7%   60,7%   28,3%   11,0%    3,7%    1,0%   grupa
+Szwecja                    82,3%   16,3%   52,0%   24,7%   10,3%    4,0%    1,0%   grupa
+Polska                     34,0%   31,3%   24,0%   12,0%    4,7%    2,3%    1,0%   1/4
+Szwajcaria                 93,7%   13,3%   67,0%   29,3%   11,3%    4,3%    0,7%   1/8
+Bośnia i Hercegowina       85,0%   15,0%   56,3%   22,7%    8,7%    2,7%    0,7%   baraże
+Węgry                      64,0%   27,0%   37,0%   12,3%    4,3%    2,7%    0,7%   1/8
+Słowenia                   62,0%   40,0%   23,7%    6,0%    2,0%    1,3%    0,7%   baraże
+Chorwacja                  79,0%   20,7%   49,0%   19,7%    6,7%    1,0%    0,3%   1/8
+Rumunia                    65,3%   23,3%   36,7%   14,3%    5,3%    1,7%    0,3%   grupa
+Szkocja                    41,3%   30,0%   22,3%    8,0%    3,7%    1,0%    0,3%   grupa el.
+Walia                      31,7%   23,7%   14,0%    4,7%    1,7%    1,0%    0,3%   1/2
+Austria                    48,0%   27,3%   30,7%   16,7%    8,3%    1,7%       –   grupa
+Serbia                     78,0%   29,7%   46,3%   15,0%    4,7%    1,3%       –   grupa el.
+Bułgaria                   48,0%   33,3%   19,3%    4,3%    2,0%    0,3%       –   grupa el.
+Grecja                     85,0%   11,3%   38,0%   10,0%    1,7%       –       –   grupa el.
+Izrael                     44,7%   35,7%   14,3%    3,7%    1,0%       –       –   grupa el.
+Czarnogóra                 25,3%   25,7%    5,7%    1,3%    0,3%       –       –   grupa el.
+Norwegia                   23,3%   22,7%    7,7%    1,7%    0,3%       –       –   baraże
+Armenia                    12,0%   14,0%    3,0%    0,7%    0,3%    0,3%       –   grupa el.
+Islandia                    5,3%   11,7%    1,0%    0,7%    0,3%       –       –   1/4
+Albania                     4,7%    8,0%    1,0%    0,3%    0,3%       –       –   grupa
+Irlandia Płn.               3,7%    5,3%    1,7%    1,3%    0,3%       –       –   1/8
+Finlandia                  42,3%   23,3%   12,3%    2,0%       –       –       –   grupa el.
+Macedonia                  11,3%   22,0%    0,3%       –       –       –       –   grupa el.
+Białoruś                    9,0%   19,7%    1,3%       –       –       –       –   grupa el.
+Gruzja                      7,7%    9,0%    1,7%       –       –       –       –   grupa el.
+Mołdawia                    5,0%    7,7%       –       –       –       –       –   grupa el.
+Litwa                       4,0%   10,0%    1,0%       –       –       –       –   grupa el.
+Estonia                     3,7%    5,7%    0,3%    0,3%       –       –       –   grupa el.
+Azerbejdżan                 3,0%    5,7%    0,3%       –       –       –       –   grupa el.
+Cypr                        1,0%    4,7%    0,3%       –       –       –       –   grupa el.
+Łotwa                       0,7%    6,7%       –       –       –       –       –   grupa el.
+Kazachstan                     –    0,7%       –       –       –       –       –   grupa el.
 Andora                         –       –       –       –       –       –       –   grupa el.
-Luksemburg                     –    0,3%       –       –       –       –       –   grupa el.
+Luksemburg                     –       –       –       –       –       –       –   grupa el.
+Gibraltar                      –       –       –       –       –       –       –   grupa el.
 San Marino                     –       –       –       –       –       –       –   grupa el.
+Wyspy Owcze                    –       –       –       –       –       –       –   grupa el.
 Liechtenstein                  –       –       –       –       –       –       –   grupa el.
-Malta                          –    0,3%       –       –       –       –       –   grupa el.
+Malta                          –       –       –       –       –       –       –   grupa el.
 
-300 symulacji w 315 s.
+300 symulacji w 16 s.

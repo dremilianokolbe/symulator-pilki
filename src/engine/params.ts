@@ -15,6 +15,8 @@ export interface EngineParams {
   finishingSkill: number;
   /** Wpływ bramkarza na obronę strzałów (na punkt powyżej 65). */
   keeperSkill: number;
+  /** Mnożnik liczby akcji w meczach reprezentacji (względem ligi). */
+  internationalAttack: number;
   /** Atut własnego boiska: mnożnik akcji gospodarza. */
   homeAttack: number;
   /** Atut własnego boiska: mnożnik akcji gościa. */
@@ -37,15 +39,29 @@ export interface EngineParams {
   offsideRate: number;
   /** Wpływ wyniku na grę: drużyna przegrywająca naciska mocniej. */
   gameStateEffect: number;
+  /** Nasycenie przewagi: od jakiej różnicy jakości (log stosunku sił) przewaga zaczyna słabnąć. */
+  mismatchKnee: number;
+  /** Jaka część przewagi faworyta ponad próg nadal działa (1 = bez nasycenia). */
+  favouriteDamping: number;
+  /** To samo dla słabszej drużyny: mniej niż 1 = słabsza drużyna stwarza więcej, niż wynika z sił. */
+  underdogDamping: number;
+  /**
+   * Plan gry komputera przed meczem: o ile punktów suwaka nastawienia (i linii obrony słabszego)
+   * drużyna zmienia ustawienie na jednostkę log stosunku sił. 0 = obie grają jak z równym rywalem.
+   */
+  aiAdaptation: number;
+  /** Forma dnia całej drużyny (odchylenie standardowe mnożnika): zgranie, motywacja, „zły dzień”. */
+  teamFormSd: number;
 }
 
 export const DEFAULT_PARAMS: EngineParams = {
-  attackRate: 0.177,
-  strengthExponent: 1.9,
+  attackRate: 0.175,
+  strengthExponent: 2.8,
   possessionExponent: 1.6,
   chanceQualityExponent: 0.5,
   finishingSkill: 0.014,
   keeperSkill: 0.012,
+  internationalAttack: 0.86,
   homeAttack: 1.18,
   awayAttack: 0.85,
   foulRate: 0.13,
@@ -57,4 +73,9 @@ export const DEFAULT_PARAMS: EngineParams = {
   fatigueRate: 0.33,
   offsideRate: 0.022,
   gameStateEffect: 0.12,
+  mismatchKnee: 0.18,
+  favouriteDamping: 0.6,
+  underdogDamping: 0.6,
+  aiAdaptation: 150,
+  teamFormSd: 0.03,
 };

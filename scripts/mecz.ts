@@ -52,6 +52,7 @@ const r = simulateMatch({
   knockout,
   neutral,
   weather,
+  international: true,
   importance: 70,
   referee: { name: 'Sędzia', strictness: 55, penaltyTendency: 50 },
 });

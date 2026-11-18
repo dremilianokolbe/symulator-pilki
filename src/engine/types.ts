@@ -125,6 +125,11 @@ export interface MatchContext {
   /** Wysokość n.p.m. w metrach. */
   altitude?: number;
   referee?: Referee;
+  /**
+   * Mecz reprezentacji. Przy tej samej różnicy sił pada w nich mniej goli niż w lidze
+   * (mniej czasu na zgranie, ostrożniejsza gra) – patrz parametr internationalAttack.
+   */
+  international?: boolean;
   /** Waga meczu 0–100 (towarzyski ~10, eliminacje ~60, finał ~100). */
   importance?: number;
   /** Mecz pucharowy: dogrywka i karne przy remisie (w rewanżu: przy remisie w dwumeczu). */

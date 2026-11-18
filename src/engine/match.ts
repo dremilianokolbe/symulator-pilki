@@ -157,6 +157,8 @@ interface TeamState {
   stats: TeamStats;
   possessionSum: number;
   shockUntil: number;
+  /** Forma dnia całej drużyny (mnożnik skuteczności wszystkich zawodników). */
+  dayForm: number;
   ai: boolean;
   /** Minuty planowanych zmian (AI). */
   subPlan: number[];
@@ -208,8 +210,9 @@ export function startMatch(ctx: MatchContext, options: StartOptions = {}): Match
     if (input.starters.length !== 11) {
       throw new Error(`${input.name}: wymagane 11 zawodników w składzie, jest ${input.starters.length}`);
     }
+    const dayForm = clamp(1 + rng.normal(0, params.teamFormSd), 0.8, 1.2);
     const all = input.starters.map((s) =>
-      makePlayerState(s.player, side, s.position, input, rng, importance, 0),
+      makePlayerState(s.player, side, s.position, input, rng, importance, 0, dayForm),
     );
     const team: TeamState = {
       side,
@@ -224,6 +227,7 @@ export function startMatch(ctx: MatchContext, options: StartOptions = {}): Match
       stats: emptyTeamStats(),
       possessionSum: 0,
       shockUntil: -1,
+      dayForm,
       ai: !manual.has(side),
       subPlan: [rng.int(55, 68), rng.int(64, 78), rng.chance(0.85) ? rng.int(74, 88) : 999],
     };
@@ -249,7 +253,28 @@ export function startMatch(ctx: MatchContext, options: StartOptions = {}): Match
     extraTime: false,
     dirty: true,
   };
+  aiGamePlan(state);
   return state;
+}
+
+/**
+ * Plan gry komputera: wyraźnie słabsza drużyna cofa się i broni niżej, mocniejsza atakuje śmielej.
+ * Dotyczy tylko stron prowadzonych przez komputer; gracz ustawia drużynę sam.
+ */
+function aiGamePlan(state: MatchState) {
+  const k = state.params.aiAdaptation;
+  if (k === 0) return;
+  const { home, away } = state.teams;
+  home.units = computeUnits(home, state.ctx);
+  away.units = computeUnits(away, state.ctx);
+  const overall = (u: Units) => u.control + u.creation + u.defence;
+  const l = Math.log(overall(home.units) / overall(away.units));
+  for (const [team, edge] of [[home, l], [away, -l]] as const) {
+    if (!team.ai) continue;
+    const shift = clamp(k * edge, -35, 25);
+    team.tactics.mentality = clamp(team.tactics.mentality + shift, 5, 95);
+    if (shift < 0) team.tactics.defensiveLine = clamp(team.tactics.defensiveLine + shift, 5, 95);
+  }
 }
 
 function makePlayerState(
@@ -260,12 +285,13 @@ function makePlayerState(
   rng: Rng,
   importance: number,
   tick: number,
+  dayForm: number,
 ): PlayerState {
   const form = input.form?.[player.id] ?? 0;
   const p = player.personality;
   const sd = 0.07 * (1.4 - p.consistency / 100);
   const bigMatch = ((p.bigMatch - 50) / 100) * 0.06 * (importance / 100);
-  const formMult = clamp(1 + (form / 100) * 0.5 + rng.normal(0, sd) + bigMatch, 0.75, 1.2);
+  const formMult = clamp(1 + (form / 100) * 0.5 + rng.normal(0, sd) + bigMatch, 0.75, 1.2) * dayForm;
   return {
     player,
     side,
@@ -603,14 +629,15 @@ function lateDefence(state: MatchState, y: TeamState): number {
 }
 
 /**
- * Nasycenie przewagi: powyżej ~20% różnicy jakości każda kolejna przewaga daje mniej
- * (słabsi bronią się głęboko, faworyt przy wysokim prowadzeniu zwalnia).
+ * Nasycenie przewagi: powyżej progu każda kolejna przewaga daje mniej
+ * (osobno dla faworyta i dla słabszej drużyny).
  */
-function saturate(ratio: number): number {
+function saturate(ratio: number, P: EngineParams): number {
   const l = Math.log(ratio);
-  const knee = 0.18;
+  const knee = P.mismatchKnee;
   if (Math.abs(l) <= knee) return ratio;
-  return Math.exp(Math.sign(l) * (knee + (Math.abs(l) - knee) * 0.6));
+  const damping = l > 0 ? P.favouriteDamping : P.underdogDamping;
+  return Math.exp(Math.sign(l) * (knee + (Math.abs(l) - knee) * damping));
 }
 
 function attackRate(state: MatchState, x: TeamState, y: TeamState, xShare: number): number {
@@ -618,8 +645,9 @@ function attackRate(state: MatchState, x: TeamState, y: TeamState, xShare: numbe
   const edge = homeEdge(state);
   const tx = x.tactics;
   const ty = y.tactics;
-  const quality = saturate((x.units.creation * 0.6 + x.units.control * 0.4) / lateDefence(state, y));
+  const quality = saturate((x.units.creation * 0.6 + x.units.control * 0.4) / lateDefence(state, y), P);
   let rate = P.attackRate * Math.pow(xShare / 0.5, 0.6) * Math.pow(quality, P.strengthExponent);
+  if (state.ctx.international) rate *= P.internationalAttack;
   const homeMult = x.side === 'home' ? P.homeAttack : P.awayAttack;
   rate *= 1 + (homeMult - 1) * edge;
   rate *= 1 + 0.25 * effectiveMentality(state, x);
@@ -1017,7 +1045,7 @@ function substitute(
 ) {
   removeFromPitch(state, team, outPs);
   const importance = state.ctx.importance ?? 50;
-  const ps = makePlayerState(inPlayer, team.side, position, team.input, state.rng, importance, state.tick);
+  const ps = makePlayerState(inPlayer, team.side, position, team.input, state.rng, importance, state.tick, team.dayForm);
   team.active.push(ps);
   team.all.push(ps);
   team.bench = team.bench.filter((p) => p.id !== inPlayer.id);

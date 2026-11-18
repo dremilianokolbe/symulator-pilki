@@ -6,9 +6,11 @@ import { simulateMatch } from '../src/engine/match';
 import { createRng } from '../src/engine/rng';
 import type { MatchResult, MatchTeamInput } from '../src/engine/types';
 import { generateTeam } from '../src/generator/players';
+import { paramsFromArgs } from './params-cli';
 
 const argIdx = process.argv.indexOf('--mecze');
 const N = argIdx > 0 ? Number(process.argv[argIdx + 1]) : 20000;
+const params = paramsFromArgs();
 
 interface Target {
   label: string;
@@ -49,7 +51,7 @@ for (let i = 0; i < N; i++) {
   const h = rng.int(0, LEAGUE_SIZE - 1);
   let a = rng.int(0, LEAGUE_SIZE - 2);
   if (a >= h) a++;
-  results.push(simulateMatch({ seed: i + 1, home: league[h]!, away: league[a]! }));
+  results.push(simulateMatch({ seed: i + 1, home: league[h]!, away: league[a]! }, { params }));
 }
 const ms = performance.now() - t0;
 
@@ -147,7 +149,7 @@ for (const diff of [0, 3, 6, 10, 15, 20, 30]) {
     const fav = favs[i % 6]!;
     const dog = dogs[(i * 7) % 6]!;
     const favHome = i % 2 === 0;
-    const r = simulateMatch({ seed: 100000 + i + diff * 7919, home: favHome ? fav : dog, away: favHome ? dog : fav, neutral: true });
+    const r = simulateMatch({ seed: 100000 + i + diff * 7919, home: favHome ? fav : dog, away: favHome ? dog : fav, neutral: true }, { params });
     const [f, s] = favHome ? r.score : [r.score[1], r.score[0]];
     gf += f;
     ga += s;
